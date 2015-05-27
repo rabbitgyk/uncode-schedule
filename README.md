@@ -22,7 +22,6 @@
 
 		private static int i = 0;
 		
-		@Scheduled(fixedDelay = 1000) 
 		public void print() {
 			System.out.println("===========start!=========");
 			System.out.println("I:"+i);i++;
