@@ -4,7 +4,7 @@
 
   <groupId>cn.uncode</groupId>
   <artifactId>uncode-schedule</artifactId>
-  <version>1.0.0</version>
+  <version>0.1.0</version>
   <packaging>jar</packaging>
 
   <name>uncode-schedule</name>
@@ -94,12 +94,6 @@
 			<artifactId>gson</artifactId>
 			<version>2.1</version>
 		</dependency>
-		
-		<dependency>
-            <groupId>org.reflections</groupId>
-            <artifactId>reflections</artifactId>
-            <version>0.9.9-RC1</version>
-        </dependency>
 
 	</dependencies>
 
