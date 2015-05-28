@@ -23,6 +23,10 @@
 		<servlet.version>2.5</servlet.version>
 		<slf4j.version>1.6.4</slf4j.version>
 		<commons.lang3.version>3.1</commons.lang3.version>
+		<version.compiler-plugin>3.1</version.compiler-plugin>
+		<version.source-plugin>2.3</version.source-plugin>
+		<version.javadoc-plugin>2.9.1</version.javadoc-plugin>
+		<version.maven-gpg-plugin>1.5</version.maven-gpg-plugin>
   </properties>
 
   <dependencies>
@@ -108,6 +112,40 @@
 					<target>${jdk.version}</target>
 					<encoding>UTF-8</encoding>
 				</configuration>	
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>${version.source-plugin}</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<attach>true</attach>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>${version.javadoc-plugin}</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<links>
+						<link>http://docs.oracle.com/javase/7/docs/api</link>
+					</links>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

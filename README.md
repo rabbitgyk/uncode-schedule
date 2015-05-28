@@ -18,6 +18,12 @@
 * 具体使用方式和spring task相同，只需要配置ZKScheduleManager即可。
 
 
+项目地址：
+oschina:http://git.oschina.net/uncode/uncode-schedule
+github:
+
+
+
 
 ------------------------------------------------------------------------
 
@@ -48,7 +54,8 @@
 				  <entry key="zkSessionTimeout" value="60000" />
 				  <entry key="userName" value="ScheduleAdmin" />
 				  <entry key="password" value="password" />
-				  <entry key="isCheckParentPath" value="true" />
+				  <!-- 是否自动注册本地任务到zk集群，默认为true -->
+				  <entry key="autoRegisterTask" value="true" />
 			   </map>
 		</property>
 	</bean>
@@ -95,7 +102,8 @@
 				  <entry key="zkSessionTimeout" value="60000" />
 				  <entry key="userName" value="ScheduleAdmin" />
 				  <entry key="password" value="password" />
-				  <entry key="isCheckParentPath" value="true" />
+				  <!-- 是否自动注册本地任务到zk集群，默认为true -->
+				  <entry key="autoRegisterTask" value="true" />
 			   </map>
 		</property>
 	</bean>

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
@@ -33,7 +34,7 @@ public class ZKManager{
     private Properties properties;
     private boolean isCheckParentPath = true;
     public enum keys {
-        zkConnectString, rootPath, userName, password, zkSessionTimeout, isCheckParentPath
+        zkConnectString, rootPath, userName, password, zkSessionTimeout, autoRegisterTask
     }
 
     public ZKManager(Properties aProperties) throws Exception{
@@ -70,7 +71,6 @@ public class ZKManager{
                 });
         String authString = this.properties.getProperty(keys.userName.toString())
                 + ":"+ this.properties.getProperty(keys.password.toString());
-        this.isCheckParentPath = Boolean.parseBoolean(this.properties.getProperty(keys.isCheckParentPath.toString(),"true"));
         zk.addAuthInfo("digest", authString.getBytes());
         acl.clear();
         acl.add(new ACL(ZooDefs.Perms.ALL, new Id("digest",
@@ -99,11 +99,11 @@ public class ZKManager{
     public static Properties createProperties(){
         Properties result = new Properties();
         result.setProperty(keys.zkConnectString.toString(),"localhost:2181");
-        result.setProperty(keys.rootPath.toString(),"/taobao-pamirs-schedule/huijin");
-        result.setProperty(keys.userName.toString(),"ScheduleAdmin");
+        result.setProperty(keys.rootPath.toString(),"/uncode/schedule");
+        result.setProperty(keys.userName.toString(),"juny");
         result.setProperty(keys.password.toString(),"password");
         result.setProperty(keys.zkSessionTimeout.toString(),"60000");
-        result.setProperty(keys.isCheckParentPath.toString(),"true");
+        result.setProperty(keys.autoRegisterTask.toString(),"true");
         
         return result;
     }
@@ -112,6 +112,13 @@ public class ZKManager{
     }
     public String getConnectStr(){
         return this.properties.getProperty(keys.zkConnectString.toString());
+    }
+    public boolean isAutoRegisterTask(){
+    	String autoRegisterTask = this.properties.getProperty(keys.autoRegisterTask.toString());
+    	if(StringUtils.isNotEmpty(autoRegisterTask)){
+    		return Boolean.valueOf(autoRegisterTask);
+    	}
+        return true;
     }
     public boolean checkZookeeperState() throws Exception{
         return zk != null && zk.getState() == States.CONNECTED;

@@ -76,7 +76,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 	protected Lock initLock = new ReentrantLock();
 	protected boolean isStopSchedule = false;
 	protected Lock registerLock = new ReentrantLock();
-
+	
 	volatile String errorMessage = "No config Zookeeper connect infomation";
 	private InitialThread initialThread;
 
@@ -114,7 +114,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 			this.errorMessage = "Zookeeper connecting ......"
 					+ this.zkManager.getConnectStr();
 			initialThread = new InitialThread(this);
-			initialThread.setName("TBScheduleManagerFactory-initialThread");
+			initialThread.setName("ScheduleManager-initialThread");
 			initialThread.start();
 		} finally {
 			this.initLock.unlock();
@@ -139,8 +139,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 					.refreshScheduleServer(this.currenScheduleServer) == false) {
 				// 更新信息失败，清除内存数据后重新注册
 				this.clearMemoInfo();
-				this.scheduleDataManager
-						.registerScheduleServer(this.currenScheduleServer);
+				this.scheduleDataManager.registerScheduleServer(this.currenScheduleServer);
 			}
 			isScheduleServerRegister = true;
 		} finally {
@@ -220,8 +219,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 		this.scheduleDataManager = new ScheduleDataManager4ZK(this.zkManager);
 		if (this.start == true) {
 			// 注册调度管理器
-			this.scheduleDataManager
-					.registerScheduleServer(this.currenScheduleServer);
+			this.scheduleDataManager.registerScheduleServer(this.currenScheduleServer);
 			if (hearBeatTimer == null) {
 				hearBeatTimer = new Timer("ScheduleManager-"
 						+ this.currenScheduleServer.getUuid() + "-HearBeat");
@@ -243,14 +241,17 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 						if(isScheduleServerRegister == false){
 							Thread.sleep(1000);
 						}
-						isOwner = scheduleDataManager.isOwner(name, currenScheduleServer.getUuid());
-						isOwnerMap.put(name, isOwner);
-					} catch (Exception e) {
-						// 如果zk不可用，使用历史数据
-						if(null != isOwnerMap){
-							isOwner = isOwnerMap.get(name);
-							LOGGER.error("Check task owner error.", e);
+						if(zkManager.checkZookeeperState()){
+							isOwner = scheduleDataManager.isOwner(name, currenScheduleServer.getUuid());
+							isOwnerMap.put(name, isOwner);
+						}else{
+							// 如果zk不可用，使用历史数据
+							if(null != isOwnerMap){
+								isOwner = isOwnerMap.get(name);
+							}
 						}
+					} catch (Exception e) {
+						LOGGER.error("Check task owner error.", e);
 					}
 		    		if(isOwner){
 		    			task.run();

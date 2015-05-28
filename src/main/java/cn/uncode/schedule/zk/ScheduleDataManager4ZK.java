@@ -127,8 +127,8 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 	
 	public void clearExpireScheduleServer() throws Exception{
 		 String zkPath = this.pathServer;
-		 if(this.zkManager.getZooKeeper().exists(zkPath,false)== null){
-			 this.zkManager.getZooKeeper().create(zkPath, null, this.zkManager.getAcl(), CreateMode.PERSISTENT);
+		 if(this.getZooKeeper().exists(zkPath,false)== null){
+			 this.getZooKeeper().create(zkPath, null, this.zkManager.getAcl(), CreateMode.PERSISTENT);
 		 }
 		for (String name : this.zkManager.getZooKeeper().getChildren(zkPath, false)) {
 			try {
@@ -191,34 +191,42 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 			 //在服务器动态调整的时候，可能出现服务器列表为空的清空
 			 return;
 		 }
-		 String zkPath = this.pathTask;
-		 if(this.zkManager.getZooKeeper().exists(zkPath,false)== null){
-			 this.zkManager.getZooKeeper().create(zkPath, null, this.zkManager.getAcl(), CreateMode.PERSISTENT);
-		 }
-		 List<String> children = this.getZooKeeper().getChildren(zkPath, false);
-		 for(int i = 0; i < children.size(); i++){
-			 String taskName = children.get(i);
-			 String taskPath = zkPath + "/" + taskName;
-			 if(this.zkManager.getZooKeeper().exists(taskPath, false) == null){
-				 this.getZooKeeper().create(taskPath, null, this.zkManager.getAcl(),CreateMode.PERSISTENT);
+		 if(this.zkManager.checkZookeeperState()){
+			 String zkPath = this.pathTask;
+			 if(this.getZooKeeper().exists(zkPath,false)== null){
+				 this.getZooKeeper().create(zkPath, null, this.zkManager.getAcl(), CreateMode.PERSISTENT);
 			 }
-			 List<String> taskServerIds = this.getZooKeeper().getChildren(taskPath, false);
-			 if(null == taskServerIds || taskServerIds.size() == 0){
-				 assignServer2Task(taskServerList, taskPath);
-			 }else{
-				 boolean hasAssignSuccess = false;
-				 for(String serverId:taskServerIds){
-					 if(taskServerList.contains(serverId)){
-						 hasAssignSuccess = true;
-						 continue;
+			 List<String> children = this.getZooKeeper().getChildren(zkPath, false);
+			 if(null != children && children.size() > 0){
+				 for(int i = 0; i < children.size(); i++){
+					 String taskName = children.get(i);
+					 String taskPath = zkPath + "/" + taskName;
+					 if(this.getZooKeeper().exists(taskPath, false) == null){
+						 this.getZooKeeper().create(taskPath, null, this.zkManager.getAcl(),CreateMode.PERSISTENT);
 					 }
-					 ZKTools.deleteTree(this.getZooKeeper(), taskPath + "/" + serverId);
-				 }
-				 if(hasAssignSuccess == false){
-					 assignServer2Task(taskServerList, taskPath);
-				 }
+					 List<String> taskServerIds = this.getZooKeeper().getChildren(taskPath, false);
+					 if(null == taskServerIds || taskServerIds.size() == 0){
+						 assignServer2Task(taskServerList, taskPath);
+					 }else{
+						 boolean hasAssignSuccess = false;
+						 for(String serverId:taskServerIds){
+							 if(taskServerList.contains(serverId)){
+								 hasAssignSuccess = true;
+								 continue;
+							 }
+							 ZKTools.deleteTree(this.getZooKeeper(), taskPath + "/" + serverId);
+						 }
+						 if(hasAssignSuccess == false){
+							 assignServer2Task(taskServerList, taskPath);
+						 }
+					 }
+				 }	
+			 }else{
+				 if(LOG.isDebugEnabled()){
+					 LOG.debug(currentUuid +":没有集群任务");
+				 }	
 			 }
-		 }	
+		 }
 		 
 	}
 
@@ -282,21 +290,32 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 
 	@Override
 	public boolean isOwner(String name, String uuid) throws Exception {
-		String zkPath = this.pathTask + "/" + name + "/" + uuid;
-		 if(this.zkManager.getZooKeeper().exists(zkPath,false) != null){
-			 return true;
-		 }
+		//查看集群中是否注册当前任务，如果没有就自动注册
+		String zkPath = this.pathTask + "/" + name;
+		if(this.zkManager.isAutoRegisterTask()){
+			if(this.getZooKeeper().exists(zkPath,false) == null){
+				this.getZooKeeper().create(zkPath, null, this.zkManager.getAcl(),CreateMode.PERSISTENT);
+				if(LOG.isDebugEnabled()){
+					 LOG.debug(uuid +":自动向集群注册任务[" + name + "]");
+				 }
+			}
+		}
+		//判断是否分配给当前节点
+		zkPath = zkPath + "/" + uuid;
+		if(this.getZooKeeper().exists(zkPath,false) != null){
+			return true;
+		}
 		return false;
 	}
 
 	@Override
 	public void addTask(String name) throws Exception {
 		String zkPath = this.pathTask;
-		if(this.zkManager.getZooKeeper().exists(zkPath,false)== null){
-			this.zkManager.getZooKeeper().create(zkPath, null, this.zkManager.getAcl(), CreateMode.PERSISTENT);
+		if(this.getZooKeeper().exists(zkPath,false)== null){
+			this.getZooKeeper().create(zkPath, null, this.zkManager.getAcl(), CreateMode.PERSISTENT);
 		}
-		if(this.zkManager.getZooKeeper().exists(zkPath + "/" + name,false) == null){
-			this.zkManager.getZooKeeper().create(zkPath + "/" + name, null, this.zkManager.getAcl(), CreateMode.PERSISTENT);
+		if(this.getZooKeeper().exists(zkPath + "/" + name,false) == null){
+			this.getZooKeeper().create(zkPath + "/" + name, null, this.zkManager.getAcl(), CreateMode.PERSISTENT);
 		}
 	}
 
