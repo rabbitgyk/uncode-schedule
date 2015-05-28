@@ -55,14 +55,9 @@ public class ZookeeperTest {
 		ZKTools.printTree(zk, "/", writer, "\n");
 		System.out.println(writer.getBuffer().toString());
 	}
-	
-	@Test
-	public void createTestTask() throws Exception {
-		ConsoleManager.addScheduleTask("taskObj#print");
-	}
 
 	@Test
-	public void testACL() throws Exception {
+	public void testCreateTask() throws Exception {
 		ZooKeeper zk = new ZooKeeper("localhost:2181", 3000, null);
 		List<ACL> acls = new ArrayList<ACL>();
 		zk.addAuthInfo("digest", "ScheduleAdmin:password".getBytes());
