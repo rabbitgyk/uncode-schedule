@@ -8,7 +8,7 @@
         http://www.springframework.org/schema/task/spring-task-3.0.xsd">
         
         
-	    <bean id="scheduleManager" class="cn.uncode.schedule.ScheduleManager"
+	    <bean id="zkScheduleManager" class="cn.uncode.schedule.ZKScheduleManager"
 			init-method="init">
 			<property name="zkConfig">
 		           <map>
@@ -25,7 +25,7 @@
 
 	    <bean id="taskObj" class="cn.uncode.schedule.SimpleTask"/>
 	
-	    <task:scheduled-tasks scheduler="scheduleManager">
+	    <task:scheduled-tasks scheduler="zkScheduleManager">
 	        <task:scheduled ref="taskObj" method="print"  fixed-rate="5000"/>
 	    </task:scheduled-tasks>
 
