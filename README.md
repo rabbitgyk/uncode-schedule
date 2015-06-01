@@ -110,7 +110,9 @@ github:
 	</bean>
 	<!-- Spring定时器注解开关-->
 	<task:annotation-driven scheduler="zkScheduleManager" />
+
 	
+------------------------------------------------------------------------
 	
 # 基于Quartz的XML配置
 
@@ -120,7 +122,7 @@ github:
 			init-method="init">
 		<property name="zkConfig">
 			   <map>
-				  <entry key="zkConnectString" value="183.131.76.147:2181" />
+				  <entry key="zkConnectString" value="127.0.0.1:2181" />
 				  <entry key="rootPath" value="/uncode/schedule" />
 				  <entry key="zkSessionTimeout" value="60000" />
 				  <entry key="userName" value="ScheduleAdmin" />
