@@ -337,6 +337,10 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 		this.zkManager = zkManager;
 	}
 	
+	public ZKManager getZkManager() {
+		return zkManager;
+	}
+
 	public void setZkConfig(Map<String, String> zkConfig) {
 		this.zkConfig = zkConfig;
 	}
@@ -365,6 +369,19 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 	public ScheduledFuture<?> scheduleWithFixedDelay(Runnable task, long delay) {
 		return super.scheduleWithFixedDelay(taskWrapper(task), delay);
 	}
+	
+	public String getScheduleServerUUid(){
+		if(null != currenScheduleServer){
+			return currenScheduleServer.getUuid();
+		}
+		return null;
+	}
+
+	public Map<String, Boolean> getIsOwnerMap() {
+		return isOwnerMap;
+	}
+	
+	
 
 
 }
