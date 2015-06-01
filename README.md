@@ -1,11 +1,11 @@
 # uncode-schedule
 
-基于zookeeper+spring task的分布式任务调度组件，非常小巧，无需任何修改就可以使spring task具备分布式特性，确保所有任务在集群中不重复，不遗漏的执行。
+基于zookeeper+quartz/spring task的分布式任务调度组件，非常小巧，无需任何修改就可以使spring task具备分布式特性，确保所有任务在集群中不重复，不遗漏的执行。
 
 
 # 功能概述
 
-1. 基于zookeeper+spring task的分布任务调度系统。
+1. 基于zookeeper+spring task/quartz的分布任务调度系统。
 2. 确保每个任务在集群中不同节点上不重复的执行。
 3. 单个任务节点故障时自动转移到其他任务节点继续执行。
 4. 任务节点启动时必须保证zookeeper可用，任务节点运行期zookeeper集群不可用时任务节点保持可用前状态运行，zookeeper集群恢复正常运期。
