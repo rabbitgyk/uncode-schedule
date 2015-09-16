@@ -12,7 +12,7 @@
 			init-method="init">
 			<property name="zkConfig">
 		           <map>
-		              <entry key="zkConnectString" value="183.131.76.147:2181" />
+		              <entry key="zkConnectString" value="127.0.0.1:2181" />
 		              <entry key="rootPath" value="/uncode/schedule" />
 		              <entry key="zkSessionTimeout" value="60000" />
 		              <entry key="userName" value="ScheduleAdmin" />
@@ -22,11 +22,11 @@
 			</property>
 		</bean>	
 
-
 	    <bean id="taskObj" class="cn.uncode.schedule.SimpleTask"/>
-	
+<!-- 	
 	    <task:scheduled-tasks scheduler="zkScheduleManager">
 	        <task:scheduled ref="taskObj" method="print"  fixed-rate="5000"/>
 	    </task:scheduled-tasks>
+ -->
 
 </beans>
