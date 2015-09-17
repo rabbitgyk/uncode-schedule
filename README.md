@@ -1,6 +1,6 @@
 # uncode-schedule
 
-基于zookeeper+spring task的分布式任务调度组件，确保所有任务在集群中不重复，不遗漏的执行。
+基于zookeeper+spring task/quartz的分布式任务调度组件，确保所有任务在集群中不重复，不遗漏的执行。支持动态添加和删除任务。
 
 
 
@@ -155,7 +155,8 @@ ConsoleManager.queryScheduleTask();
 	<!-- Spring定时器注解开关-->
 	<task:annotation-driven scheduler="zkScheduleManager" />
 	
-	
+------------------------------------------------------------------------
+
 # 基于Quartz的XML配置
 
 	注意：spring的MethodInvokingJobDetailFactoryBean改成cn.uncode.schedule.quartz.MethodInvokingJobDetailFactoryBean
