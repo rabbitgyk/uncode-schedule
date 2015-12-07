@@ -44,7 +44,7 @@ public interface IScheduleDataManager{
 	
 	public void delTask(String targetBean, String targetMethod)throws Exception;
 	
-	public String[] selectTask()throws Exception;
+	public List<TaskDefine> selectTask()throws Exception;
 	
 	public boolean checkLocalTask(String currentUuid)throws Exception;
     

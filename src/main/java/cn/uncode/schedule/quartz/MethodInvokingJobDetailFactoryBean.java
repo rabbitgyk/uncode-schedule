@@ -21,12 +21,12 @@ import java.lang.reflect.Method;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.Scheduler;
-import org.quartz.StatefulJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -101,7 +101,7 @@ public class MethodInvokingJobDetailFactoryBean extends ArgumentConvertingMethod
 			jobDetailImplClass = null;
 		}
 		try {
-			Class jobExecutionContextClass =
+			Class<?> jobExecutionContextClass =
 					QuartzJobBean.class.getClassLoader().loadClass("org.quartz.JobExecutionContext");
 			setResultMethod = jobExecutionContextClass.getMethod("setResult", Object.class);
 		}
@@ -198,7 +198,7 @@ public class MethodInvokingJobDetailFactoryBean extends ArgumentConvertingMethod
 	}
 
 	@Override
-	protected Class resolveClassName(String className) throws ClassNotFoundException {
+	protected Class<?> resolveClassName(String className) throws ClassNotFoundException {
 		return ClassUtils.forName(className, this.beanClassLoader);
 	}
 
@@ -210,7 +210,7 @@ public class MethodInvokingJobDetailFactoryBean extends ArgumentConvertingMethod
 		String name = (this.name != null ? this.name : this.beanName);
 
 		// Consider the concurrent flag to choose between stateful and stateless job.
-		Class jobClass = (this.concurrent ? MethodInvokingJob.class : StatefulMethodInvokingJob.class);
+		Class<?> jobClass = (this.concurrent ? MethodInvokingJob.class : StatefulMethodInvokingJob.class);
 
 		// Build JobDetail instance.
 		if (jobDetailImplClass != null) {
@@ -227,7 +227,7 @@ public class MethodInvokingJobDetailFactoryBean extends ArgumentConvertingMethod
 		// Register job listener names.
 		if (this.jobListenerNames != null) {
 			for (String jobListenerName : this.jobListenerNames) {
-				if (jobDetailImplClass != null) {
+				if (jobListenerName != null) {
 					throw new IllegalStateException("Non-global JobListeners not supported on Quartz 2 - " +
 							"manually register a Matcher against the Quartz ListenerManager instead");
 				}
@@ -251,8 +251,8 @@ public class MethodInvokingJobDetailFactoryBean extends ArgumentConvertingMethod
 	 * Overridden to support the {@link #setTargetBeanName "targetBeanName"} feature.
 	 */
 	@Override
-	public Class getTargetClass() {
-		Class targetClass = super.getTargetClass();
+	public Class<?> getTargetClass() {
+		Class<?> targetClass = super.getTargetClass();
 		if (targetClass == null && this.targetBeanName != null) {
 			Assert.state(this.beanFactory != null, "BeanFactory must be set when using 'targetBeanName'");
 			targetClass = this.beanFactory.getType(this.targetBeanName);
@@ -353,7 +353,7 @@ public class MethodInvokingJobDetailFactoryBean extends ArgumentConvertingMethod
 	 * Quartz checks whether or not jobs are stateful and if so,
 	 * won't let jobs interfere with each other.
 	 */
-	public static class StatefulMethodInvokingJob extends MethodInvokingJob implements StatefulJob {
+	public static class StatefulMethodInvokingJob extends MethodInvokingJob implements Job {
 
 		// No implementation, just an addition of the tag interface StatefulJob
 		// in order to allow stateful method invoking jobs.

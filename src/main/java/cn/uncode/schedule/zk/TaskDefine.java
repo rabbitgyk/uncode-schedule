@@ -34,6 +34,8 @@ public class TaskDefine {
 	 */
 	private long period;
 	
+	private String currentServer;
+	
 	
 	
 	public boolean begin(Date sysTime){
@@ -81,6 +83,14 @@ public class TaskDefine {
 
 	public void setPeriod(long period) {
 		this.period = period;
+	}
+
+	public String getCurrentServer() {
+		return currentServer;
+	}
+
+	public void setCurrentServer(String currentServer) {
+		this.currentServer = currentServer;
 	}
 
 	

@@ -68,7 +68,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 	 */
 	private boolean isScheduleServerRegister = false;
 
-	private ApplicationContext applicationcontext;
+	private static ApplicationContext applicationcontext;
 	
 	private Map<String, Boolean> isOwnerMap = new ConcurrentHashMap<String, Boolean>();
 
@@ -342,7 +342,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 	@Override
 	public void setApplicationContext(ApplicationContext applicationcontext)
 			throws BeansException {
-		this.applicationcontext = applicationcontext;
+		ZKScheduleManager.applicationcontext = applicationcontext;
 	}
 	
 	public void setZkManager(ZKManager zkManager) {
@@ -393,8 +393,8 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 		return isOwnerMap;
 	}
 
-	public ApplicationContext getApplicationcontext() {
-		return applicationcontext;
+	public static ApplicationContext getApplicationcontext() {
+		return ZKScheduleManager.applicationcontext;
 	}
 	
 	

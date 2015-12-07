@@ -12,12 +12,14 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cn.uncode.schedule.ConsoleManager;
 import cn.uncode.schedule.local.DynamicTaskManager;
 
 import com.google.gson.Gson;
@@ -331,21 +333,42 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 	@Override
 	public void delTask(String targetBean, String targetMethod) throws Exception {
 		String zkPath = this.pathTask;
-		if(this.getZooKeeper().exists(zkPath,false)== null){
+		if(this.getZooKeeper().exists(zkPath,false) != null){
 			zkPath = zkPath + "/" + targetBean + "#" + targetMethod;
-			if(this.getZooKeeper().exists(zkPath, false) == null){
+			if(this.getZooKeeper().exists(zkPath, false) != null){
 				ZKTools.deleteTree(this.getZooKeeper(), zkPath);
 			}
 		}
 	}
 	
 	@Override
-	public String[] selectTask() throws Exception {
+	public List<TaskDefine> selectTask() throws Exception {
 		String zkPath = this.pathTask;
-		if(this.getZooKeeper().exists(zkPath,false)== null){
-			return ZKTools.getTree(this.getZooKeeper(), zkPath);
+		List<TaskDefine> taskDefines = new ArrayList<TaskDefine>();
+		if(this.getZooKeeper().exists(zkPath,false) != null){
+			List<String> childrens = this.getZooKeeper().getChildren(zkPath, false);
+			for(String child:childrens){
+				byte[] data = this.getZooKeeper().getData(zkPath+"/"+child, null, null);
+				TaskDefine taskDefine = null;
+				if (null != data) {
+					 String json = new String(data);
+					 taskDefine = this.gson.fromJson(json, TaskDefine.class);
+				}else{
+					String[] names = child.split("#");
+					if(names != null && StringUtils.isNotEmpty(names[0])){
+						taskDefine = new TaskDefine();
+						taskDefine.setTargetBean(names[0]);
+						taskDefine.setTargetMethod(names[1]);
+					}
+				}
+				List<String> sers = this.getZooKeeper().getChildren(zkPath+"/"+child, false);
+				if(sers != null){
+					taskDefine.setCurrentServer(sers.get(0));
+				}
+				taskDefines.add(taskDefine);
+			}
 		}
-		return null;
+		return taskDefines;
 	}
 
 	@Override

@@ -12,6 +12,7 @@
 4. 任务节点启动时必须保证zookeeper可用，任务节点运行期zookeeper集群不可用时任务节点保持可用前状态运行，zookeeper集群恢复正常运期。
 5. 支持动态添加和删除任务。
 6. 添加ip黑名单，过滤不需要执行任务的节点。
+7. 简单管理后台
 
 
 说明：
@@ -205,6 +206,18 @@ ConsoleManager.queryScheduleTask();
 		</property>
 	</bean>
 
+------------------------------------------------------------------------	
+	
+# 管理后台
+
+	<servlet>
+		<servlet-name>UncodeScheduleManager</servlet-name>
+		<servlet-class>cn.uncode.schedule.web.ManagerServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>UncodeScheduleManager</servlet-name>
+		<url-pattern>/uncode/schedule</url-pattern>
+	</servlet-mapping>
 
 ------------------------------------------------------------------------
 

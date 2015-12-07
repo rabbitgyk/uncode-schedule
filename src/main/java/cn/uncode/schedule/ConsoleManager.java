@@ -1,21 +1,29 @@
 package cn.uncode.schedule;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.context.ContextLoader;
 
 import cn.uncode.schedule.zk.TaskDefine;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 
-public class ConsoleManager {   
+
+public class ConsoleManager {
+	
     protected static transient Logger log = LoggerFactory.getLogger(ConsoleManager.class);
+    
+    private static Gson GSON = new GsonBuilder().create();
 
     private static ZKScheduleManager scheduleManager;
     
     public static ZKScheduleManager getScheduleManager() throws Exception {
     	if(null == ConsoleManager.scheduleManager){
-    		ConsoleManager.scheduleManager = (ZKScheduleManager)ContextLoader.getCurrentWebApplicationContext().getBean(ZKScheduleManager.class);
+    		ConsoleManager.scheduleManager = (ZKScheduleManager)ZKScheduleManager.getApplicationcontext().getBean(ZKScheduleManager.class);
     	}
         return ConsoleManager.scheduleManager;
     }
@@ -36,13 +44,15 @@ public class ConsoleManager {
 		}
     }
     
-    public static String[] queryScheduleTask() {
+    public static List<TaskDefine> queryScheduleTask() {
+    	List<TaskDefine> taskDefines = new ArrayList<TaskDefine>();
         try {
-			return ConsoleManager.scheduleManager.getScheduleDataManager().selectTask();
+			List<TaskDefine> tasks = ConsoleManager.scheduleManager.getScheduleDataManager().selectTask();
+			taskDefines.addAll(tasks);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
-        return null;
+        return taskDefines;
     }
     
 }
