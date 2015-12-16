@@ -223,7 +223,7 @@ ConsoleManager.queryScheduleTask();
 
 # 版权
 
-作者：juny（ywj_316@qq.com）
+作者：冶卫军（ywj_316@qq.com）
 
 技术支持QQ群：47306892
 
