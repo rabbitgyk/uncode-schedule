@@ -362,7 +362,7 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 					}
 				}
 				List<String> sers = this.getZooKeeper().getChildren(zkPath+"/"+child, false);
-				if(sers != null){
+				if(sers != null&&sers.size() != 0){//避免出现java.lang.IndexOutOfBoundsException异常
 					taskDefine.setCurrentServer(sers.get(0));
 				}
 				taskDefines.add(taskDefine);

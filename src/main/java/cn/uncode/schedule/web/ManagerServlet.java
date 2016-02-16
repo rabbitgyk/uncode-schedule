@@ -118,7 +118,7 @@ public class ManagerServlet extends HttpServlet{
 		        PrintWriter out = response.getWriter();  
 		        StringBuffer sb = new StringBuffer();
 	    		for(int i=0; i< servers.size();i++){
-	    			String ser = servers.get(0);
+	    			String ser = servers.get(i);
 	    			sb.append("<tr>")
 	    			  .append("<td>").append(i+1).append("</td>")
 	    			  .append("<td>").append(ser).append("</td>");
