@@ -208,7 +208,7 @@ ConsoleManager.queryScheduleTask();
 
 ------------------------------------------------------------------------	
 	
-# 管理后台
+# uncode-schedule管理后台
 
 	URL：项目名称/uncode/schedule
 	![img1](http://git.oschina.net/uploads/images/2016/0512/161916_a27081b1_277761.png)
@@ -216,7 +216,14 @@ ConsoleManager.queryScheduleTask();
 	
 ------------------------------------------------------------------------
 
-# 版权
+# 大家都在使用uncode-schedule
+
+        [快速递](http://www.ksudi.com)
+	[更多](https://git.oschina.net/uncode/uncode-schedule/issues/3)
+	
+------------------------------------------------------------------------
+
+# 关于
 
 作者：冶卫军（ywj_316@qq.com,微信:yeweijun）
 
