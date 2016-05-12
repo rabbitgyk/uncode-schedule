@@ -218,8 +218,8 @@ ConsoleManager.queryScheduleTask();
 
 # 大家都在使用uncode-schedule
 
-        [快速递](http:///www.ksudi.com)
-	https://git.oschina.net/uncode/uncode-schedule/issues/3
+[快速递](http:///www.ksudi.com)
+[快速递](https://git.oschina.net/uncode/uncode-schedule/issues/3)
 	
 ------------------------------------------------------------------------
 
