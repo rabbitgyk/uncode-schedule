@@ -210,20 +210,15 @@ ConsoleManager.queryScheduleTask();
 	
 # 管理后台
 
-	<servlet>
-		<servlet-name>UncodeScheduleManager</servlet-name>
-		<servlet-class>cn.uncode.schedule.web.ManagerServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>UncodeScheduleManager</servlet-name>
-		<url-pattern>/uncode/schedule</url-pattern>
-	</servlet-mapping>
-
+	URL：项目名称/uncode/schedule
+	![img1](http://git.oschina.net/uploads/images/2016/0512/161916_a27081b1_277761.png)
+	![img2](http://git.oschina.net/uploads/images/2016/0512/162217_0043832a_277761.png)
+	
 ------------------------------------------------------------------------
 
 # 版权
 
-作者：juny（ywj_316@qq.com）
+作者：冶卫军（ywj_316@qq.com,微信:yeweijun）
 
 技术支持QQ群：47306892
 

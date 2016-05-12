@@ -218,7 +218,14 @@ public class MethodInvokingJobDetailFactoryBean extends ArgumentConvertingMethod
 			bw.setPropertyValue("durability", true);
 			((JobDataMap) bw.getPropertyValue("jobDataMap")).put("methodInvoker", this);
 		}
-
+        else {
+			// Using Quartz 1.x JobDetail class...
+			this.jobDetail = new JobDetail(name, this.group, jobClass);
+			this.jobDetail.setVolatility(true);
+			this.jobDetail.setDurability(true);
+			this.jobDetail.getJobDataMap().put("methodInvoker", this);
+		}
+		
 		// Register job listener names.
 		if (this.jobListenerNames != null) {
 			for (String jobListenerName : this.jobListenerNames) {
