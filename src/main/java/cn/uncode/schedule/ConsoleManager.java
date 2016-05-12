@@ -6,10 +6,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cn.uncode.schedule.zk.TaskDefine;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import cn.uncode.schedule.core.TaskDefine;
 
 
 
@@ -17,7 +14,7 @@ public class ConsoleManager {
 	
     protected static transient Logger log = LoggerFactory.getLogger(ConsoleManager.class);
     
-    private static Gson GSON = new GsonBuilder().create();
+//    private static Gson GSON = new GsonBuilder().create();
 
     private static ZKScheduleManager scheduleManager;
     
@@ -36,9 +33,9 @@ public class ConsoleManager {
 		}
     }
     
-    public static void delScheduleTask(String targetBean, String targetMethod) {
+    public static void delScheduleTask(TaskDefine taskDefine) {
         try {
-			ConsoleManager.scheduleManager.getScheduleDataManager().delTask(targetBean, targetMethod);
+			ConsoleManager.scheduleManager.getScheduleDataManager().delTask(taskDefine);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
@@ -47,12 +44,16 @@ public class ConsoleManager {
     public static List<TaskDefine> queryScheduleTask() {
     	List<TaskDefine> taskDefines = new ArrayList<TaskDefine>();
         try {
-			List<TaskDefine> tasks = ConsoleManager.scheduleManager.getScheduleDataManager().selectTask();
+			List<TaskDefine> tasks = ConsoleManager.getScheduleManager().getScheduleDataManager().selectTask();
 			taskDefines.addAll(tasks);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
         return taskDefines;
+    }
+    
+    public static boolean isExistsTask(TaskDefine taskDefine) throws Exception{
+    		return ConsoleManager.scheduleManager.getScheduleDataManager().isExistsTask(taskDefine);
     }
     
 }

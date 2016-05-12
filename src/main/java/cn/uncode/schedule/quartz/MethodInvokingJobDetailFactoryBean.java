@@ -1,3 +1,4 @@
+
 package cn.uncode.schedule.quartz;
 
 /*
@@ -41,7 +42,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.support.ArgumentConvertingMethodInvoker;
 import org.springframework.scheduling.quartz.JobMethodInvocationFailedException;
 import org.springframework.scheduling.quartz.QuartzJobBean;
-import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.MethodInvoker;
@@ -132,8 +132,7 @@ public class MethodInvokingJobDetailFactoryBean extends ArgumentConvertingMethod
 
 	/**
 	 * Set the name of the job.
-	 * <p>Default is the bean name of this FactoryBean.
-	 * @see org.quartz.JobDetail#setName
+	 * Default is the bean name of this FactoryBean.
 	 */
 	public void setName(String name) {
 		this.name = name;
@@ -142,8 +141,6 @@ public class MethodInvokingJobDetailFactoryBean extends ArgumentConvertingMethod
 	/**
 	 * Set the group of the job.
 	 * <p>Default is the default group of the Scheduler.
-	 * @see org.quartz.JobDetail#setGroup
-	 * @see org.quartz.Scheduler#DEFAULT_GROUP
 	 */
 	public void setGroup(String group) {
 		this.group = group;
@@ -178,8 +175,6 @@ public class MethodInvokingJobDetailFactoryBean extends ArgumentConvertingMethod
 	 * non-global JobListeners registered with the Scheduler.
 	 * <p>A JobListener name always refers to the name returned
 	 * by the JobListener implementation.
-	 * @see SchedulerFactoryBean#setJobListeners
-	 * @see org.quartz.JobListener#getName
 	 */
 	public void setJobListenerNames(String[] names) {
 		this.jobListenerNames = names;

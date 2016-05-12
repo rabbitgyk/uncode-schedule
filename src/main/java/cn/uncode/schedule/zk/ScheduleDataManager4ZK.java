@@ -19,9 +19,6 @@ import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cn.uncode.schedule.ConsoleManager;
-import cn.uncode.schedule.local.DynamicTaskManager;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
@@ -31,6 +28,11 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+
+import cn.uncode.schedule.DynamicTaskManager;
+import cn.uncode.schedule.core.IScheduleDataManager;
+import cn.uncode.schedule.core.ScheduleServer;
+import cn.uncode.schedule.core.TaskDefine;
 
 /**
  * zk实现类
@@ -315,14 +317,22 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 		return isOwner;
 	}
 
-	
+	@Override
+	public boolean isExistsTask(TaskDefine taskDefine) throws Exception{
+		String zkPath = this.pathTask+ "/" + taskDefine.stringKey();
+		if(this.getZooKeeper().exists(zkPath, false) != null){
+			return true;
+		}
+		return false;
+	}
+
 	@Override
 	public void addTask(TaskDefine taskDefine) throws Exception {
 		String zkPath = this.pathTask;
 		if(this.getZooKeeper().exists(zkPath,false)== null){
 			this.getZooKeeper().create(zkPath, null, this.zkManager.getAcl(), CreateMode.PERSISTENT);
 		}
-		zkPath = zkPath + "/" + taskDefine.getTargetBean() + "#" + taskDefine.getTargetMethod();
+		zkPath = zkPath + "/" + taskDefine.stringKey();
 		if(this.getZooKeeper().exists(zkPath, false) == null){
 			this.getZooKeeper().create(zkPath, null, this.zkManager.getAcl(), CreateMode.PERSISTENT);
 		}
@@ -342,6 +352,18 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 	}
 	
 	@Override
+	public void delTask(TaskDefine taskDefine) throws Exception {
+		String zkPath = this.pathTask;
+		if(this.getZooKeeper().exists(zkPath,false) != null){
+			zkPath = zkPath + "/" + taskDefine.stringKey();
+			if(this.getZooKeeper().exists(zkPath, false) != null){
+				ZKTools.deleteTree(this.getZooKeeper(), zkPath);
+			}
+		}
+	}
+	
+	
+	@Override
 	public List<TaskDefine> selectTask() throws Exception {
 		String zkPath = this.pathTask;
 		List<TaskDefine> taskDefines = new ArrayList<TaskDefine>();
@@ -353,16 +375,18 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 				if (null != data) {
 					 String json = new String(data);
 					 taskDefine = this.gson.fromJson(json, TaskDefine.class);
+					 taskDefine.setType("uncode task");
 				}else{
 					String[] names = child.split("#");
 					if(names != null && StringUtils.isNotEmpty(names[0])){
 						taskDefine = new TaskDefine();
 						taskDefine.setTargetBean(names[0]);
 						taskDefine.setTargetMethod(names[1]);
+						taskDefine.setType("quartz/spring task");
 					}
 				}
 				List<String> sers = this.getZooKeeper().getChildren(zkPath+"/"+child, false);
-				if(sers != null){
+				if(sers != null && sers.size() > 0){
 					taskDefine.setCurrentServer(sers.get(0));
 				}
 				taskDefines.add(taskDefine);
