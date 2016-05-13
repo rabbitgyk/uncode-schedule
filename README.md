@@ -219,7 +219,7 @@ ConsoleManager.queryScheduleTask();
 	
 # uncode-schedule管理后台
 
-URL：项目名称/uncode/schedule
+访问URL：项目名称/uncode/schedule
 
 ![img1](http://git.oschina.net/uploads/images/2016/0512/161916_a27081b1_277761.png)
 ![img2](http://git.oschina.net/uploads/images/2016/0512/162217_0043832a_277761.png)
