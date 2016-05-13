@@ -220,10 +220,10 @@ public class MethodInvokingJobDetailFactoryBean extends ArgumentConvertingMethod
 		}
         else {
 			// Using Quartz 1.x JobDetail class...
-			this.jobDetail = new JobDetail(name, this.group, jobClass);
+			/*this.jobDetail = new JobDetail(name, this.group, jobClass);
 			this.jobDetail.setVolatility(true);
 			this.jobDetail.setDurability(true);
-			this.jobDetail.getJobDataMap().put("methodInvoker", this);
+			this.jobDetail.getJobDataMap().put("methodInvoker", this);*/
 		}
 		
 		// Register job listener names.

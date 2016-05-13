@@ -4,7 +4,7 @@
 
   <groupId>cn.uncode</groupId>
   <artifactId>uncode-schedule</artifactId>
-  <version>0.5.0</version>
+  <version>0.6.0</version>
   <packaging>jar</packaging>
 
   <name>uncode-schedule</name>
@@ -21,6 +21,7 @@
 		<log4j.version>1.2.16</log4j.version>
 		<junit.version>4.8.1</junit.version>
 		<servlet.version>2.5</servlet.version>
+		<javax.servlet.version>3.1.0</javax.servlet.version>
 		<slf4j.version>1.6.4</slf4j.version>
 		<commons.lang3.version>3.1</commons.lang3.version>
 		<version.compiler-plugin>3.1</version.compiler-plugin>
@@ -63,22 +64,14 @@
 			<artifactId>spring-web</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
+
 		<!-- =================================================== -->
 		<!-- servlet -->
 		<!-- =================================================== -->
-		<!-- servlet与jsp一定要provided，因为Tomcat已提供。 -->
-		<!-- 但Tomcat未提供JSTL。 -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>${servlet.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet.jsp</groupId>
-			<artifactId>jsp-api</artifactId>
-			<version>2.2</version>
-			<scope>provided</scope>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>${javax.servlet.version}</version>
 		</dependency>
 		
     	<!-- ==================== -->

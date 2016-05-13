@@ -211,13 +211,8 @@ public class ManagerServlet extends HttpServlet{
 		        PrintWriter out = response.getWriter();  
 		        StringBuffer sb = new StringBuffer();
 	    		for(int i=0; i< servers.size();i++){
-<<<<<<< HEAD
-	    			String ser = servers.get(0);
-	    			sb.append("<tr class=\"info\">")
-=======
 	    			String ser = servers.get(i);
-	    			sb.append("<tr>")
->>>>>>> 1d8b808d1d10b82d83665c3d71ee567e3ece8ea7
+	    			sb.append("<tr class=\"info\">")
 	    			  .append("<td>").append(i+1).append("</td>")
 	    			  .append("<td>").append(ser).append("</td>");
 					if( ConsoleManager.getScheduleManager().getScheduleDataManager().isLeader(ser, servers)){
