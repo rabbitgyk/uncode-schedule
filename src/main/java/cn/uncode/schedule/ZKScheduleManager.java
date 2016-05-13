@@ -243,8 +243,14 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 	private Runnable taskWrapper(final Runnable task){
 		return new Runnable(){
 			public void run(){
-				ScheduledMethodRunnable scheduledMethodRunnable = (ScheduledMethodRunnable)task;
-		    	Method targetMethod = scheduledMethodRunnable.getMethod();
+				Method targetMethod = null;
+				if(task instanceof ScheduledMethodRunnable){
+					ScheduledMethodRunnable uncodeScheduledMethodRunnable = (ScheduledMethodRunnable)task;
+					targetMethod = uncodeScheduledMethodRunnable.getMethod();
+				}else{
+					org.springframework.scheduling.support.ScheduledMethodRunnable springScheduledMethodRunnable = (org.springframework.scheduling.support.ScheduledMethodRunnable)task;
+					targetMethod = springScheduledMethodRunnable.getMethod();
+				}
 		    	String[] beanNames = applicationcontext.getBeanNamesForType(targetMethod.getDeclaringClass());
 		    	if(null != beanNames && StringUtils.isNotEmpty(beanNames[0])){
 		    		String name = ScheduleUtil.getTaskNameFormBean(beanNames[0], targetMethod.getName());
