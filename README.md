@@ -228,7 +228,8 @@ URL：项目名称/uncode/schedule
 
 # 大家都在使用uncode-schedule
 
-- [快速递](http:///www.ksudi.com)
+- [快速递](http://www.ksudi.com)
+- [优酷](http://www.youku.com/)
 - [更多](https://git.oschina.net/uncode/uncode-schedule/issues/3)
 	
 ------------------------------------------------------------------------
