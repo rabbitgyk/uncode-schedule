@@ -105,7 +105,7 @@ public class DynamicTaskManager {
 	 * @return
 	 */
 	private static ScheduledMethodRunnable buildScheduledRunnable(String targetBean, String targetMethod, String params){
-		Object bean = null;
+		Object bean;
 		ScheduledMethodRunnable scheduledMethodRunnable = null;
 		try {
 			bean = ZKScheduleManager.getApplicationcontext().getBean(targetBean);
