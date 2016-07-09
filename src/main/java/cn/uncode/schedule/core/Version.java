@@ -13,11 +13,7 @@ public class Version {
 	   return version;
    }
    public static boolean isCompatible(String dataVersion){
-	  if(version.compareTo(dataVersion)>=0){
-		  return true;
-	  }else{
-		  return false;
-	  }
+	   return version.compareTo(dataVersion) >= 0;
    }
    
 }

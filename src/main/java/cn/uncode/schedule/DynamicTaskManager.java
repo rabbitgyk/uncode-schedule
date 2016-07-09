@@ -14,6 +14,7 @@ import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.support.CronTrigger;
+import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
 import cn.uncode.schedule.core.ScheduledMethodRunnable;
@@ -105,34 +106,49 @@ public class DynamicTaskManager {
 	 */
 	private static ScheduledMethodRunnable buildScheduledRunnable(String targetBean, String targetMethod, String params){
 		Object bean = null;
-		Method method = null;
 		ScheduledMethodRunnable scheduledMethodRunnable = null;
 		try {
-			ConsoleManager.getScheduleManager();
 			bean = ZKScheduleManager.getApplicationcontext().getBean(targetBean);
-			if(bean != null){
-				Class<?> clazz = null;
-				if(AopUtils.isAopProxy(bean)){
-					clazz = AopProxyUtils.ultimateTargetClass(bean);
-					//method = ReflectionUtils.findMethod(AopProxyUtils.ultimateTargetClass(bean), targetMethod);
-				}else{
-					clazz = bean.getClass();
-					//method = ReflectionUtils.findMethod(bean.getClass(), targetMethod);
-				}
-				if(params != null){
-					method = ReflectionUtils.findMethod(clazz, targetMethod,String.class);
-				}else{
-					method = ReflectionUtils.findMethod(clazz, targetMethod);
-				}
-				if(method != null){
-					scheduledMethodRunnable = new ScheduledMethodRunnable(bean, method, params);
-				}
-			}
+			scheduledMethodRunnable = _buildScheduledRunnable(bean, targetMethod, params);
 		} catch (Exception e) {
 			LOGGER.debug(e.getLocalizedMessage(), e);
 		}
 		return scheduledMethodRunnable;
 	}
-	
 
+	private static ScheduledMethodRunnable buildScheduledRunnable(Object bean, String targetMethod, String params){
+		ScheduledMethodRunnable scheduledMethodRunnable = null;
+		try {
+			scheduledMethodRunnable = _buildScheduledRunnable(bean, targetMethod, params);
+		}catch (Exception e){
+			LOGGER.debug(e.getLocalizedMessage(), e);
+		}
+		return scheduledMethodRunnable;
+	}
+
+
+	private static ScheduledMethodRunnable _buildScheduledRunnable(Object bean, String targetMethod, String params) throws Exception {
+
+		Assert.notNull(bean, "target object must not be null");
+		Assert.hasLength(targetMethod, "Method name must not be empty");
+
+		Method method;
+		ScheduledMethodRunnable scheduledMethodRunnable;
+
+		Class<?> clazz;
+		if (AopUtils.isAopProxy(bean)) {
+			clazz = AopProxyUtils.ultimateTargetClass(bean);
+		} else {
+			clazz = bean.getClass();
+		}
+		if (params != null) {
+			method = ReflectionUtils.findMethod(clazz, targetMethod, String.class);
+		} else {
+			method = ReflectionUtils.findMethod(clazz, targetMethod);
+		}
+
+		Assert.notNull(method, "can not find method named " + targetMethod);
+		scheduledMethodRunnable = new ScheduledMethodRunnable(bean, method, params);
+		return scheduledMethodRunnable;
+	}
 }

@@ -35,7 +35,7 @@ public class ZKManager{
     private ZooKeeper zk;
     private List<ACL> acl = new ArrayList<ACL>();
     private Properties properties;
-    private boolean isCheckParentPath = true;
+
     public enum keys {
         zkConnectString, rootPath, userName, password, zkSessionTimeout, autoRegisterTask, ipBlacklist
     }
@@ -126,24 +126,19 @@ public class ZKManager{
     }
     public void initial() throws Exception {
         //当zk状态正常后才能调用
+        checkParent(zk,this.getRootPath());
         if(zk.exists(this.getRootPath(), false) == null){
             ZKTools.createPath(zk, this.getRootPath(), CreateMode.PERSISTENT, acl);
-            if(isCheckParentPath == true){
-              checkParent(zk,this.getRootPath());
-            }
             //设置版本信息
             zk.setData(this.getRootPath(),Version.getVersion().getBytes(),-1);
         }else{
             //先校验父亲节点，本身是否已经是schedule的目录
-            if(isCheckParentPath == true){
-               checkParent(zk,this.getRootPath());
-            }
             byte[] value = zk.getData(this.getRootPath(), false, null);
             if(value == null){
                 zk.setData(this.getRootPath(),Version.getVersion().getBytes(),-1);
             }else{
                 String dataVersion = new String(value);
-                if(Version.isCompatible(dataVersion)==false){
+                if(!Version.isCompatible(dataVersion)){
                     throw new Exception("TBSchedule程序版本 "+ Version.getVersion() +" 不兼容Zookeeper中的数据版本 " + dataVersion );
                 }
                 log.info("当前的程序版本:" + Version.getVersion() + " 数据版本: " + dataVersion);
@@ -155,17 +150,14 @@ public class ZKManager{
         String zkPath = "";
         for (int i =0;i< list.length -1;i++){
             String str = list[i];
-            if (str.equals("") == false) {
+            if (StringUtils.isNotEmpty(str)) {
                 zkPath = zkPath + "/" + str;
                 if (zk.exists(zkPath, false) != null) {
                     byte[] value = zk.getData(zkPath, false, null);
-                    if(value != null){
-                        String tmpVersion = new String(value);
-                       if(tmpVersion.indexOf("uncode-schedule-") >=0){
+                    if(value != null && new String(value).contains("uncode-schedule-")){
                         throw new Exception("\"" + zkPath +"\"  is already a schedule instance's root directory, its any subdirectory cannot as the root directory of others");
                     }
                 }
-            }
             }
         }
     }   
@@ -174,7 +166,7 @@ public class ZKManager{
         return acl;
     }
     public ZooKeeper getZooKeeper() throws Exception {
-        if(this.checkZookeeperState()==false){
+        if(!this.checkZookeeperState()){
             reConnection();
         }
         return this.zk;

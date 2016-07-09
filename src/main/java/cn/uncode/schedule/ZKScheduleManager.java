@@ -77,7 +77,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 	protected boolean isStopSchedule = false;
 	protected Lock registerLock = new ReentrantLock();
 	
-	volatile String errorMessage = "No config Zookeeper connect infomation";
+	private volatile String errorMessage = "No config Zookeeper connect information";
 	private InitialThread initialThread;
 
 	public ZKScheduleManager() {
@@ -93,7 +93,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 	}
 
 	public void reInit(Properties p) throws Exception {
-		if (this.start == true || this.hearBeatTimer != null) {
+		if (this.start || this.hearBeatTimer != null) {
 			throw new Exception("调度器有任务处理，不能重新初始化");
 		}
 		this.init(p);
@@ -123,7 +123,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 	public void rewriteScheduleInfo() throws Exception {
 		registerLock.lock();
 		try {
-			if (this.isStopSchedule == true) {
+			if (this.isStopSchedule) {
 				if (LOGGER.isDebugEnabled()) {
 					LOGGER.debug("外部命令终止调度,不在注册调度服务，避免遗留垃圾数据："
 							+ currenScheduleServer.getUuid());
@@ -134,8 +134,8 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 			if (errorMessage != null) {
 				this.currenScheduleServer.setDealInfoDesc(errorMessage);
 			}
-			if (this.scheduleDataManager
-					.refreshScheduleServer(this.currenScheduleServer) == false) {
+			if (!this.scheduleDataManager
+					.refreshScheduleServer(this.currenScheduleServer)) {
 				// 更新信息失败，清除内存数据后重新注册
 				this.clearMemoInfo();
 				this.scheduleDataManager.registerScheduleServer(this.currenScheduleServer);
@@ -169,8 +169,8 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 	public void assignScheduleTask() throws Exception {
 		scheduleDataManager.clearExpireScheduleServer();
 		List<String> serverList = scheduleDataManager.loadScheduleServerNames();
-		if (scheduleDataManager.isLeader(this.currenScheduleServer.getUuid(),
-				serverList) == false) {
+		if (!scheduleDataManager.isLeader(this.currenScheduleServer.getUuid(),
+				serverList)) {
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug(this.currenScheduleServer.getUuid()
 						+ ":不是负责任务分配的Leader,直接返回");
@@ -197,7 +197,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 		try {
 			rewriteScheduleInfo();
 			// 如果任务信息没有初始化成功，不做任务相关的处理
-			if (this.isScheduleServerRegister == false) {
+			if (!this.isScheduleServerRegister) {
 				return;
 			}
 
@@ -229,7 +229,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 	public void initialData() throws Exception {
 		this.zkManager.initial();
 		this.scheduleDataManager = new ScheduleDataManager4ZK(this.zkManager);
-		if (this.start == true) {
+		if (this.start) {
 			// 注册调度管理器
 			this.scheduleDataManager.registerScheduleServer(this.currenScheduleServer);
 			if (hearBeatTimer == null) {
@@ -256,7 +256,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 		    		String name = ScheduleUtil.getTaskNameFormBean(beanNames[0], targetMethod.getName());
 		    		boolean isOwner = false;
 					try {
-						if(isScheduleServerRegister == false){
+						if(!isScheduleServerRegister){
 							Thread.sleep(1000);
 						}
 						if(zkManager.checkZookeeperState()){
@@ -317,7 +317,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 			sm.initLock.lock();
 			try {
 				int count = 0;
-				while (sm.zkManager.checkZookeeperState() == false) {
+				while (!sm.zkManager.checkZookeeperState()) {
 					count = count + 1;
 					if (count % 50 == 0) {
 						sm.errorMessage = "Zookeeper connecting ......"
@@ -326,7 +326,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 						log.error(sm.errorMessage);
 					}
 					Thread.sleep(20);
-					if (this.isStop == true) {
+					if (this.isStop) {
 						return;
 					}
 				}

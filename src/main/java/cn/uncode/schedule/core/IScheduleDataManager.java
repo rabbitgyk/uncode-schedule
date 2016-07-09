@@ -13,7 +13,7 @@ public interface IScheduleDataManager{
 
     /**
      * 发送心跳信息
-     * 
+     *
      * @param server
      * @throws Exception
      */

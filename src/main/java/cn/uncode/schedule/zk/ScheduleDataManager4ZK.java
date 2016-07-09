@@ -320,10 +320,7 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 	@Override
 	public boolean isExistsTask(TaskDefine taskDefine) throws Exception{
 		String zkPath = this.pathTask+ "/" + taskDefine.stringKey();
-		if(this.getZooKeeper().exists(zkPath, false) != null){
-			return true;
-		}
-		return false;
+		return this.getZooKeeper().exists(zkPath, false) != null;
 	}
 
 	@Override
@@ -368,8 +365,8 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 		String zkPath = this.pathTask;
 		List<TaskDefine> taskDefines = new ArrayList<TaskDefine>();
 		if(this.getZooKeeper().exists(zkPath,false) != null){
-			List<String> childrens = this.getZooKeeper().getChildren(zkPath, false);
-			for(String child:childrens){
+			List<String> childes = this.getZooKeeper().getChildren(zkPath, false);
+			for(String child:childes){
 				byte[] data = this.getZooKeeper().getData(zkPath+"/"+child, null, null);
 				TaskDefine taskDefine = null;
 				if (null != data) {
@@ -378,15 +375,16 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 					 taskDefine.setType("uncode task");
 				}else{
 					String[] names = child.split("#");
-					if(names != null && StringUtils.isNotEmpty(names[0])){
+					if(StringUtils.isNotEmpty(names[0])){
 						taskDefine = new TaskDefine();
 						taskDefine.setTargetBean(names[0]);
 						taskDefine.setTargetMethod(names[1]);
 						taskDefine.setType("quartz/spring task");
 					}
 				}
+
 				List<String> sers = this.getZooKeeper().getChildren(zkPath+"/"+child, false);
-				if(sers != null && sers.size() > 0){
+				if(taskDefine != null && sers != null && sers.size() > 0){
 					taskDefine.setCurrentServer(sers.get(0));
 				}
 				taskDefines.add(taskDefine);
@@ -402,8 +400,7 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 			 List<String> children = this.getZooKeeper().getChildren(zkPath, false);
 			 List<String> ownerTask = new ArrayList<String>();
 			 if(null != children && children.size() > 0){
-				 for(int i = 0; i < children.size(); i++){
-					 String taskName = children.get(i);
+				 for (String taskName : children) {
 					 if (isOwner(taskName, currentUuid)) {
 						 String taskPath = zkPath + "/" + taskName;
 						 byte[] data = this.getZooKeeper().getData(taskPath, null, null);
@@ -413,7 +410,7 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 							 ownerTask.add(taskName);
 							 DynamicTaskManager.scheduleTask(taskDefine, new Date(getSystemTime()));
 						 }
-					 }                                                 
+					 }
 				 }
 			 }
 			 DynamicTaskManager.clearLocalTask(ownerTask);
