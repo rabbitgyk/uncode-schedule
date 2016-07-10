@@ -18,7 +18,7 @@ import org.apache.zookeeper.data.Stat;
  *
  */
 public class ZKTools {
-	public static void createPath(ZooKeeper zk, String path,CreateMode createMode, List<ACL> acl) throws Exception {
+	static void createPath(ZooKeeper zk, String path, CreateMode createMode, List<ACL> acl) throws Exception {
 		String[] list = path.split("/");
 		String zkPath = "";
 		for (String str : list) {
@@ -50,7 +50,7 @@ public class ZKTools {
 	   }
    }
    
-   public static String[] getTree(ZooKeeper zk,String path) throws Exception{
+   private static String[] getTree(ZooKeeper zk, String path) throws Exception{
 	   if(zk.exists(path, false) == null){
 		   return new String[0];
 	   }

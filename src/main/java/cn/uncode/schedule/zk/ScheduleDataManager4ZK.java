@@ -103,7 +103,7 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 
 	@Override
 	public void registerScheduleServer(ScheduleServer server) throws Exception {
-		if(server.isRegister() == true){
+		if(server.isRegister()){
 			throw new Exception(server.getUuid() + " 被重复注册");
 		}
 		//clearExpireScheduleServer();
@@ -184,7 +184,7 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 	
 	@Override
 	public void assignTask(String currentUuid, List<String> taskServerList) throws Exception {
-		 if(this.isLeader(currentUuid,taskServerList)==false){
+		 if(!this.isLeader(currentUuid, taskServerList)){
 			 if(LOG.isDebugEnabled()){
 				 LOG.debug(currentUuid +":不是负责任务分配的Leader,直接返回");
 			 }
@@ -223,7 +223,7 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 							 }
 							 ZKTools.deleteTree(this.getZooKeeper(), taskPath + "/" + serverId);
 						 }
-						 if(hasAssignSuccess == false){
+						 if(!hasAssignSuccess){
 							 assignServer2Task(taskServerList, taskPath);
 						 }
 					 }
@@ -243,9 +243,7 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 		 String serverId = taskServerList.get(index);
 		 this.getZooKeeper().create(taskPath + "/" + serverId, null, this.zkManager.getAcl(),CreateMode.PERSISTENT);
 		 if(LOG.isDebugEnabled()){
-			 StringBuffer buffer = new StringBuffer();
-			 buffer.append("Assign server [").append(serverId).append("]").append(" to task [").append(taskPath).append("]");
-			 LOG.debug(buffer.toString());
+			 LOG.debug("Assign server [" + serverId + "]" + " to task [" + taskPath + "]");
 		 }
 	}
 
@@ -288,7 +286,7 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 	  
 	        try {   
 	        	DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");   
-	            Date date = (Date) format.parse(json.getAsString());   
+	            Date date = format.parse(json.getAsString());
 	            return new Timestamp(date.getTime());   
 	        } catch (Exception e) {   
 	            throw new JsonParseException(e);   

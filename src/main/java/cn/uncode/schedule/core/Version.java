@@ -7,7 +7,7 @@ package cn.uncode.schedule.core;
  */
 public class Version {
 	
-   public final static String version="uncode-schedule-1.0.0";
+   private final static String version="uncode-schedule-1.0.0";
    
    public static String getVersion(){
 	   return version;

@@ -73,9 +73,9 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 	private Map<String, Boolean> isOwnerMap = new ConcurrentHashMap<String, Boolean>();
 
 	private Timer hearBeatTimer;
-	protected Lock initLock = new ReentrantLock();
-	protected boolean isStopSchedule = false;
-	protected Lock registerLock = new ReentrantLock();
+	private Lock initLock = new ReentrantLock();
+	private boolean isStopSchedule = false;
+	private Lock registerLock = new ReentrantLock();
 	
 	private volatile String errorMessage = "No config Zookeeper connect information";
 	private InitialThread initialThread;
@@ -120,7 +120,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 		}
 	}
 
-	public void rewriteScheduleInfo() throws Exception {
+	private void rewriteScheduleInfo() throws Exception {
 		registerLock.lock();
 		try {
 			if (this.isStopSchedule) {

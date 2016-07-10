@@ -36,7 +36,7 @@ public class ZKManager{
     private List<ACL> acl = new ArrayList<ACL>();
     private Properties properties;
 
-    public enum keys {
+    private enum keys {
         zkConnectString, rootPath, userName, password, zkSessionTimeout, autoRegisterTask, ipBlacklist
     }
 
@@ -49,7 +49,7 @@ public class ZKManager{
      * 重连zookeeper
      * @throws Exception
      */
-    public synchronized void  reConnection() throws Exception{
+    private synchronized void  reConnection() throws Exception{
         if (this.zk != null) {
             this.zk.close();
             this.zk = null;
@@ -100,9 +100,10 @@ public class ZKManager{
         this.zk.close();
     }
     
-    public String getRootPath(){
+    String getRootPath(){
         return this.properties.getProperty(keys.rootPath.toString());
     }
+
     public List<String> getIpBlacklist(){
     	List<String> ips = new ArrayList<String>();
     	String list = this.properties.getProperty(keys.ipBlacklist.toString());
@@ -114,16 +115,19 @@ public class ZKManager{
     public String getConnectStr(){
         return this.properties.getProperty(keys.zkConnectString.toString());
     }
-    public boolean isAutoRegisterTask(){
+
+    boolean isAutoRegisterTask(){
     	String autoRegisterTask = this.properties.getProperty(keys.autoRegisterTask.toString());
     	if(StringUtils.isNotEmpty(autoRegisterTask)){
     		return Boolean.valueOf(autoRegisterTask);
     	}
         return true;
     }
+
     public boolean checkZookeeperState() throws Exception{
         return zk != null && zk.getState() == States.CONNECTED;
     }
+
     public void initial() throws Exception {
         //当zk状态正常后才能调用
         checkParent(zk,this.getRootPath());
@@ -145,7 +149,7 @@ public class ZKManager{
             }
         }
     }
-    public static void checkParent(ZooKeeper zk, String path) throws Exception {
+    private static void checkParent(ZooKeeper zk, String path) throws Exception {
         String[] list = path.split("/");
         String zkPath = "";
         for (int i =0;i< list.length -1;i++){
@@ -162,10 +166,11 @@ public class ZKManager{
         }
     }   
     
-    public List<ACL> getAcl() {
+    List<ACL> getAcl() {
         return acl;
     }
-    public ZooKeeper getZooKeeper() throws Exception {
+
+    ZooKeeper getZooKeeper() throws Exception {
         if(!this.checkZookeeperState()){
             reConnection();
         }
