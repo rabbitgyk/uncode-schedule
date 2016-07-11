@@ -103,11 +103,11 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 
 	@Override
 	public void registerScheduleServer(ScheduleServer server) throws Exception {
-		if(server.isRegister() == true){
+		if(server.isRegister()){
 			throw new Exception(server.getUuid() + " 被重复注册");
 		}
 		//clearExpireScheduleServer();
-		String realPath = null;
+		String realPath;
 		//此处必须增加UUID作为唯一性保障
 		StringBuffer id = new StringBuffer();
 		id.append(server.getIp()).append("$")
@@ -149,20 +149,38 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 			}
 		}
 	}
-	
-	public List<String> loadScheduleServerNames(String taskType)throws Exception {
-		String zkPath = this.pathServer;
-		if (this.getZooKeeper().exists(zkPath, false) == null) {
-			return new ArrayList<String>();
-		}
-		List<String> serverList = this.getZooKeeper().getChildren(zkPath, false);
-		Collections.sort(serverList, new Comparator<String>() {
-			public int compare(String u1, String u2) {
-				return u1.substring(u1.lastIndexOf("$") + 1).compareTo(
-						u2.substring(u2.lastIndexOf("$") + 1));
+
+
+	@Override
+	public void unRegisterScheduleServer(ScheduleServer server) throws Exception {
+		List<String> serverList = this.loadScheduleServerNames();
+
+		if(server.isRegister() && this.isLeader(server.getUuid(), serverList)){
+			//delete task
+			String zkPath = this.pathTask;
+			String serverPath = this.pathServer;
+
+			if(this.getZooKeeper().exists(zkPath,false)== null){
+				this.getZooKeeper().create(zkPath, null, this.zkManager.getAcl(), CreateMode.PERSISTENT);
 			}
-		});
-		return serverList;
+
+			//get all task
+			List<String> children = this.getZooKeeper().getChildren(zkPath, false);
+			if(null != children && children.size() > 0){
+				for (String taskName : children) {
+					String taskPath = zkPath + "/" + taskName;
+					if (this.getZooKeeper().exists(taskPath, false) != null) {
+						ZKTools.deleteTree(this.getZooKeeper(), taskPath + "/" + server.getUuid());
+					}
+				}
+			}
+
+			//删除
+			if (this.getZooKeeper().exists(this.pathServer, false) == null) {
+				ZKTools.deleteTree(this.getZooKeeper(), serverPath + serverPath + "/" + server.getUuid());
+			}
+			server.setRegister(false);
+		}
 	}
 	
 	public List<String> loadScheduleServerNames() throws Exception {
@@ -180,11 +198,11 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 		});
 		return serverList;
 	}
-	
+
 	
 	@Override
 	public void assignTask(String currentUuid, List<String> taskServerList) throws Exception {
-		 if(this.isLeader(currentUuid,taskServerList)==false){
+		 if(!this.isLeader(currentUuid, taskServerList)){
 			 if(LOG.isDebugEnabled()){
 				 LOG.debug(currentUuid +":不是负责任务分配的Leader,直接返回");
 			 }
@@ -204,30 +222,29 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 			 }
 			 List<String> children = this.getZooKeeper().getChildren(zkPath, false);
 			 if(null != children && children.size() > 0){
-				 for(int i = 0; i < children.size(); i++){
-					 String taskName = children.get(i);
+				 for (String taskName : children) {
 					 String taskPath = zkPath + "/" + taskName;
-					 if(this.getZooKeeper().exists(taskPath, false) == null){
-						 this.getZooKeeper().create(taskPath, null, this.zkManager.getAcl(),CreateMode.PERSISTENT);
+					 if (this.getZooKeeper().exists(taskPath, false) == null) {
+						 this.getZooKeeper().create(taskPath, null, this.zkManager.getAcl(), CreateMode.PERSISTENT);
 					 }
-					 
+
 					 List<String> taskServerIds = this.getZooKeeper().getChildren(taskPath, false);
-					 if(null == taskServerIds || taskServerIds.size() == 0){
+					 if (null == taskServerIds || taskServerIds.size() == 0) {
 						 assignServer2Task(taskServerList, taskPath);
-					 }else{
+					 } else {
 						 boolean hasAssignSuccess = false;
-						 for(String serverId:taskServerIds){
-							 if(taskServerList.contains(serverId)){
+						 for (String serverId : taskServerIds) {
+							 if (taskServerList.contains(serverId)) {
 								 hasAssignSuccess = true;
 								 continue;
 							 }
 							 ZKTools.deleteTree(this.getZooKeeper(), taskPath + "/" + serverId);
 						 }
-						 if(hasAssignSuccess == false){
+						 if (!hasAssignSuccess) {
 							 assignServer2Task(taskServerList, taskPath);
 						 }
 					 }
-					 
+
 				 }	
 			 }else{
 				 if(LOG.isDebugEnabled()){
@@ -243,9 +260,7 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 		 String serverId = taskServerList.get(index);
 		 this.getZooKeeper().create(taskPath + "/" + serverId, null, this.zkManager.getAcl(),CreateMode.PERSISTENT);
 		 if(LOG.isDebugEnabled()){
-			 StringBuffer buffer = new StringBuffer();
-			 buffer.append("Assign server [").append(serverId).append("]").append(" to task [").append(taskPath).append("]");
-			 LOG.debug(buffer.toString());
+			 LOG.debug("Assign server [" + serverId + "]" + " to task [" + taskPath + "]");
 		 }
 	}
 
@@ -253,7 +268,7 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
     	return uuid.equals(getLeader(serverList));
     }
 	
-	public String getLeader(List<String> serverList){
+	private String getLeader(List<String> serverList){
 		if(serverList == null || serverList.size() ==0){
 			return "";
 		}
@@ -270,11 +285,11 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
     	return leader;
     }
 	
-	public long getSystemTime(){
+	private long getSystemTime(){
 		return this.zkBaseTime + ( System.currentTimeMillis() - this.loclaBaseTime);
 	}
 	
-	class TimestampTypeAdapter implements JsonSerializer<Timestamp>, JsonDeserializer<Timestamp>{   
+	private class TimestampTypeAdapter implements JsonSerializer<Timestamp>, JsonDeserializer<Timestamp>{
 	    public JsonElement serialize(Timestamp src, Type arg1, JsonSerializationContext arg2) {   
 	    	DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");   
 	        String dateFormatAsString = format.format(new Date(src.getTime()));   
@@ -326,9 +341,6 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 	@Override
 	public void addTask(TaskDefine taskDefine) throws Exception {
 		String zkPath = this.pathTask;
-		if(this.getZooKeeper().exists(zkPath,false)== null){
-			this.getZooKeeper().create(zkPath, null, this.zkManager.getAcl(), CreateMode.PERSISTENT);
-		}
 		zkPath = zkPath + "/" + taskDefine.stringKey();
 		if(this.getZooKeeper().exists(zkPath, false) == null){
 			this.getZooKeeper().create(zkPath, null, this.zkManager.getAcl(), CreateMode.PERSISTENT);

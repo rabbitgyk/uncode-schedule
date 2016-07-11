@@ -29,7 +29,8 @@ public interface IScheduleDataManager{
 
     
     public boolean isLeader(String uuid,List<String> serverList);
-    
+
+	public void unRegisterScheduleServer(ScheduleServer server) throws Exception;
 
 	public void clearExpireScheduleServer() throws Exception;
 	

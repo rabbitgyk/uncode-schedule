@@ -59,7 +59,7 @@ public class ZKTools {
 	   while(index < dealList.size()){
 		   String tempPath = dealList.get(index);
 		   List<String> children = zk.getChildren(tempPath, false);
-		   if(tempPath.equalsIgnoreCase("/") == false){
+		   if(!tempPath.equalsIgnoreCase("/")){
 			   tempPath = tempPath +"/";
 		   }
 		   Collections.sort(children);
