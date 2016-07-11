@@ -73,9 +73,9 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 	private Map<String, Boolean> isOwnerMap = new ConcurrentHashMap<String, Boolean>();
 
 	private Timer hearBeatTimer;
-	protected Lock initLock = new ReentrantLock();
-	protected boolean isStopSchedule = false;
-	protected Lock registerLock = new ReentrantLock();
+	private Lock initLock = new ReentrantLock();
+	private boolean isStopSchedule = false;
+	private Lock registerLock = new ReentrantLock();
 	
 	private volatile String errorMessage = "No config Zookeeper connect information";
 	private InitialThread initialThread;
@@ -120,7 +120,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 		}
 	}
 
-	public void rewriteScheduleInfo() throws Exception {
+	private void rewriteScheduleInfo() throws Exception {
 		registerLock.lock();
 		try {
 			if (this.isStopSchedule) {
@@ -179,8 +179,9 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 		}
 		//黑名单
 		for(String ip:zkManager.getIpBlacklist()){
-			if(serverList.contains(ip)){
-				serverList.remove(ip);
+			int index = serverList.indexOf(ip);
+			if (index > -1){
+				serverList.remove(index);
 			}
 		}
 		// 设置初始化成功标准，避免在leader转换的时候，新增的线程组初始化失败

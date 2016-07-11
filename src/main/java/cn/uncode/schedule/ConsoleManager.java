@@ -12,7 +12,7 @@ import cn.uncode.schedule.core.TaskDefine;
 
 public class ConsoleManager {
 	
-    protected static transient Logger log = LoggerFactory.getLogger(ConsoleManager.class);
+    private static transient Logger log = LoggerFactory.getLogger(ConsoleManager.class);
     
 //    private static Gson GSON = new GsonBuilder().create();
 
