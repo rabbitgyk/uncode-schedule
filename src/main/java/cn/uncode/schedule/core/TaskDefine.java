@@ -46,11 +46,8 @@ public class TaskDefine {
 	 */
 	private String type;
 	
-	public boolean begin(Date sysTime){
-		if(null == sysTime){
-			return false;
-		}
-		return sysTime.after(startTime);
+	public boolean begin(Date sysTime) {
+		return null != sysTime && sysTime.after(startTime);
 	}
 
 	public String getTargetBean() {

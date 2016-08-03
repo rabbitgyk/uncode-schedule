@@ -12,7 +12,7 @@ import cn.uncode.schedule.core.TaskDefine;
 
 public class ConsoleManager {
 	
-    protected static transient Logger log = LoggerFactory.getLogger(ConsoleManager.class);
+    private static transient Logger log = LoggerFactory.getLogger(ConsoleManager.class);
     
 //    private static Gson GSON = new GsonBuilder().create();
 
@@ -20,14 +20,16 @@ public class ConsoleManager {
     
     public static ZKScheduleManager getScheduleManager() throws Exception {
     	if(null == ConsoleManager.scheduleManager){
-    		ConsoleManager.scheduleManager = (ZKScheduleManager)ZKScheduleManager.getApplicationcontext().getBean(ZKScheduleManager.class);
+			synchronized(ConsoleManager.class) {
+				ConsoleManager.scheduleManager = ZKScheduleManager.getApplicationcontext().getBean(ZKScheduleManager.class);
+			}
     	}
         return ConsoleManager.scheduleManager;
     }
 
     public static void addScheduleTask(TaskDefine taskDefine) {
         try {
-			ConsoleManager.scheduleManager.getScheduleDataManager().addTask(taskDefine);
+			ConsoleManager.getScheduleManager().getScheduleDataManager().addTask(taskDefine);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}

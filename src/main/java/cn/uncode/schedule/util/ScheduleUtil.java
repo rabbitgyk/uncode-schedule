@@ -56,13 +56,13 @@ public class ScheduleUtil {
         return FORMAT.parse(d);
     }
     public static String getTaskTypeByBaseAndOwnSign(String baseType,String ownSign){
-        if(ownSign.equals(OWN_SIGN_BASE) == true){
+        if(ownSign.equals(OWN_SIGN_BASE)){
             return baseType;
         }
         return baseType+"$" + ownSign;
     }
     public static String splitBaseTaskTypeFromTaskType(String taskType){
-         if(taskType.indexOf("$") >=0){
+         if(taskType.contains("$")){
              return taskType.substring(0,taskType.indexOf("$"));
          }else{
              return taskType;
@@ -70,7 +70,7 @@ public class ScheduleUtil {
          
     }
     public static String splitOwnsignFromTaskType(String taskType){
-         if(taskType.indexOf("$") >=0){
+         if(taskType.contains("$")){
              return taskType.substring(taskType.indexOf("$")+1);
          }else{
              return OWN_SIGN_BASE;

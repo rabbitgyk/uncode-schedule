@@ -15,7 +15,7 @@ import org.apache.zookeeper.server.auth.DigestAuthenticationProvider;
 import org.junit.Test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import cn.uncode.schedule.zk.TaskDefine;
+import cn.uncode.schedule.core.TaskDefine;
 import cn.uncode.schedule.zk.ZKTools;
 
 
@@ -31,8 +31,7 @@ public class ZookeeperTest {
 			try {
 				StringWriter writer = new StringWriter();
 				ZKTools.printTree(zk, "/uncode/schedule", writer, "");
-				System.out
-						.println(i++ + "----" + writer.getBuffer().toString());
+				System.out.println(i++ + "----" + writer.toString());
 				Thread.sleep(2000);
 			} catch (Exception e) {
 				System.out.println(e.getMessage());
@@ -45,7 +44,7 @@ public class ZookeeperTest {
 		ZooKeeper zk = new ZooKeeper("localhost:2181", 3000, null);
 		StringWriter writer = new StringWriter();
 		ZKTools.printTree(zk, "/", writer, "\n");
-		System.out.println(writer.getBuffer().toString());
+		System.out.println(writer.toString());
 	}
 
 	@Test
@@ -65,8 +64,7 @@ public class ZookeeperTest {
 		List<ACL> acls = new ArrayList<ACL>();
 		zk.addAuthInfo("digest", "ScheduleAdmin:password".getBytes());
 		acls.add(new ACL(ZooDefs.Perms.ALL, new Id("digest",
-				DigestAuthenticationProvider
-						.generateDigest("ScheduleAdmin:password"))));
+				DigestAuthenticationProvider.generateDigest("ScheduleAdmin:password"))));
 		acls.add(new ACL(ZooDefs.Perms.READ, Ids.ANYONE_ID_UNSAFE));
 		zk.create("/uncode/schedule/task/taskObj#print", new byte[0], acls, CreateMode.PERSISTENT);
 		zk.getData("/uncode/schedule/task/taskObj#print", false, null);
