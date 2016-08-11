@@ -269,13 +269,14 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 								isOwner = isOwnerMap.get(name);
 							}
 						}
+						if(isOwner){
+			    			task.run();
+			    			scheduleDataManager.saveRunningInfo(name, currenScheduleServer.getUuid());
+			    			LOGGER.info("Cron job has been executed.");
+			    		}
 					} catch (Exception e) {
 						LOGGER.error("Check task owner error.", e);
 					}
-		    		if(isOwner){
-		    			task.run();
-		    			LOGGER.info("Cron job has been executed.");
-		    		}
 		    	}
 			}
 		};

@@ -4,7 +4,7 @@
 
   <groupId>cn.uncode</groupId>
   <artifactId>uncode-schedule</artifactId>
-  <version>0.6.0</version>
+  <version>1.6.0</version>
   <packaging>jar</packaging>
 
   <name>uncode-schedule</name>

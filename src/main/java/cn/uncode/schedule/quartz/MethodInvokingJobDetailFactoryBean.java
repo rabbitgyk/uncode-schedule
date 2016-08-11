@@ -329,6 +329,7 @@ public class MethodInvokingJobDetailFactoryBean extends ArgumentConvertingMethod
 				}
 	    		if(isOwner){
 	    			ReflectionUtils.invokeMethod(setResultMethod, context, this.methodInvoker.invoke());
+	    			ConsoleManager.getScheduleManager().getScheduleDataManager().saveRunningInfo(name, ConsoleManager.getScheduleManager().getScheduleServerUUid());
 	    			LOGGER.info("Cron job has been executed.");
 	    		}
 			}

@@ -331,6 +331,31 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 		}
 		return isOwner;
 	}
+	
+	@Override
+	public boolean saveRunningInfo(String name, String uuid) throws Exception {
+		//查看集群中是否注册当前任务，如果没有就自动注册
+		String zkPath = this.pathTask + "/" + name;
+		//判断是否分配给当前节点
+		zkPath = zkPath + "/" + uuid;
+		if(this.getZooKeeper().exists(zkPath,false) != null){
+			try {
+				int times = 0;
+				byte[] dataVal = this.getZooKeeper().getData(zkPath, null, null);
+				if(dataVal != null){
+					String val = new String(dataVal);
+					String[] vals = val.split(":");
+					times = Integer.parseInt(vals[0]);
+				}
+				times++;
+				String newVal = times+":"+System.currentTimeMillis();
+				this.getZooKeeper().setData(zkPath, newVal.getBytes(), -1);
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+		}
+		return true;
+	}
 
 	@Override
 	public boolean isExistsTask(TaskDefine taskDefine) throws Exception{
@@ -398,6 +423,13 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 				List<String> sers = this.getZooKeeper().getChildren(zkPath+"/"+child, false);
 				if(taskDefine != null && sers != null && sers.size() > 0){
 					taskDefine.setCurrentServer(sers.get(0));
+					byte[] dataVal = this.getZooKeeper().getData(zkPath+"/"+child+"/"+sers.get(0), null, null);
+					if(dataVal != null){
+						String val = new String(dataVal);
+						String[] vals = val.split(":");
+						taskDefine.setRunTimes(Integer.valueOf(vals[0]));
+						taskDefine.setLastRunningTime(Long.valueOf(vals[1]));
+					}
 				}
 				taskDefines.add(taskDefine);
 			}
@@ -429,6 +461,7 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 		}
 		return false;
 	}
+
 
 	
 

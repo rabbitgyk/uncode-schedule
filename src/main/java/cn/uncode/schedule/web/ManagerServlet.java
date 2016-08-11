@@ -2,6 +2,7 @@ package cn.uncode.schedule.web;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -154,6 +155,8 @@ public class ManagerServlet extends HttpServlet{
 			"\t 						<th>开始时间</th>\n"+
 			"\t 						<th>周期（秒）</th>\n"+
 			"\t 						<th>执行节点</th>\n"+
+			"\t 						<th>执行次数</th>\n"+
+			"\t 						<th>最近执行时间</th>\n"+
 			"\t 						<th>操作</th>\n"+
 			"\t 					</tr>\n"+
 			"\t 				</thead>\n"+
@@ -225,6 +228,7 @@ public class ManagerServlet extends HttpServlet{
 	    		
 	    		List<TaskDefine> tasks = ConsoleManager.queryScheduleTask();
 	    		StringBuffer sbTask = new StringBuffer();
+	    		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	    		for(int i=0; i< tasks.size();i++){
 	    			TaskDefine taskDefine = tasks.get(i);
 	    			sbTask.append("<tr class=\"info\">")
@@ -236,7 +240,14 @@ public class ManagerServlet extends HttpServlet{
 	    			  .append("<td>").append(taskDefine.getStartTime()).append("</td>")
 	    			  .append("<td>").append(taskDefine.getPeriod()).append("</td>")
 	    			  .append("<td>").append(taskDefine.getCurrentServer()).append("</td>")
-	    			  .append("<td>").append("<a href=\"").append(request.getSession().getServletContext().getContextPath())
+	    			  .append("<td>").append(taskDefine.getRunTimes()).append("</td>");
+	    			if(taskDefine.getLastRunningTime() > 0){
+	    				Date date = new Date(taskDefine.getLastRunningTime());
+		    			sbTask.append("<td>").append(sdf.format(date)).append("</td>");
+	    			}else{
+	    				sbTask.append("<td>").append("-").append("</td>");
+	    			}
+	    			sbTask.append("<td>").append("<a href=\"").append(request.getSession().getServletContext().getContextPath())
 	    			  				 .append("/uncode/schedule?del=")
 	    			                 .append(taskDefine.getTargetBean())
 	    			                 .append("_")

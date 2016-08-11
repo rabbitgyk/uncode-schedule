@@ -46,6 +46,10 @@ public class TaskDefine {
 	 */
 	private String type;
 	
+	private int runTimes;
+	
+	private long lastRunningTime;
+	
 	public boolean begin(Date sysTime) {
 		return null != sysTime && sysTime.after(startTime);
 	}
@@ -116,6 +120,22 @@ public class TaskDefine {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public int getRunTimes() {
+		return runTimes;
+	}
+
+	public void setRunTimes(int runTimes) {
+		this.runTimes = runTimes;
+	}
+
+	public long getLastRunningTime() {
+		return lastRunningTime;
+	}
+
+	public void setLastRunningTime(long lastRunningTime) {
+		this.lastRunningTime = lastRunningTime;
 	}
 	
 	
