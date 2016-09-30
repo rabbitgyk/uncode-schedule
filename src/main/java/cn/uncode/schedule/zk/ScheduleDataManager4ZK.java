@@ -321,7 +321,9 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 				this.getZooKeeper().create(zkPath, null, this.zkManager.getAcl(),CreateMode.PERSISTENT);
 				if(LOG.isDebugEnabled()){
 					 LOG.debug(uuid +":自动向集群注册任务[" + name + "]");
-				 }
+				}
+                // 重新分配任务
+                assignServer2Task(loadScheduleServerNames(), zkPath);
 			}
 		}
 		//判断是否分配给当前节点
@@ -471,7 +473,3 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 
 
 }
-
-
-
- 
