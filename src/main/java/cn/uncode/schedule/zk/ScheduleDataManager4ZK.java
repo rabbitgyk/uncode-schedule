@@ -33,6 +33,7 @@ import cn.uncode.schedule.DynamicTaskManager;
 import cn.uncode.schedule.core.IScheduleDataManager;
 import cn.uncode.schedule.core.ScheduleServer;
 import cn.uncode.schedule.core.TaskDefine;
+import cn.uncode.schedule.util.ScheduleUtil;
 
 /**
  * zk实现类
@@ -112,8 +113,16 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 		StringBuffer id = new StringBuffer();
 		id.append(server.getIp()).append("$")
 			.append(UUID.randomUUID().toString().replaceAll("-", "").toUpperCase());
-		String zkServerPath = pathServer + "/" + id.toString() +"$";
-		realPath = this.getZooKeeper().create(zkServerPath, null, this.zkManager.getAcl(),CreateMode.PERSISTENT_SEQUENTIAL);
+		
+		String serverCode = ScheduleUtil.getServerCode();
+		if(serverCode != null){ //如果配置文件schedule.properties中配置server code
+			String zkServerPath = pathServer + "/" + id.toString() + "$" + serverCode;
+			realPath = this.getZooKeeper().create(zkServerPath, null, this.zkManager.getAcl(),CreateMode.PERSISTENT);
+		}else{
+			String zkServerPath = pathServer + "/" + id.toString() +"$";
+			realPath = this.getZooKeeper().create(zkServerPath, null, this.zkManager.getAcl(),CreateMode.PERSISTENT_SEQUENTIAL);
+		}
+		
 		server.setUuid(realPath.substring(realPath.lastIndexOf("/") + 1));
 		
 		Timestamp heartBeatTime = new Timestamp(getSystemTime());

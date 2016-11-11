@@ -1,10 +1,13 @@
 package cn.uncode.schedule.util;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Properties;
 
 
 /**
@@ -113,6 +116,25 @@ public class ScheduleUtil {
         }
         return s;
     }
+    
+    static Properties prop = new Properties();
+	static {
+		InputStream in = ScheduleUtil.class.getResourceAsStream("/schedule.properties");
+		try {
+			prop.load(in);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * 从配置文件获取server code
+	 * @return
+	 */
+	public static String getServerCode(){
+		return prop.getProperty("uncode.schedule.server.code");
+	}
+    
     public static void main(String[] args) {
         System.out.println(printArray(assignTaskNumber(1,10,0)));
         System.out.println(printArray(assignTaskNumber(2,10,0)));
