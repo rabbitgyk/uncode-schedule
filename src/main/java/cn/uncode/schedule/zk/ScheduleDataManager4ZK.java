@@ -184,14 +184,17 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 				}
 			}
 
-			//删除
-			if (this.getZooKeeper().exists(this.pathServer, false) == null) {
+			//删除(此处修改==为!=)
+			if (this.getZooKeeper().exists(this.pathServer, false) != null) {
 				ZKTools.deleteTree(this.getZooKeeper(), serverPath + serverPath + "/" + server.getUuid());
 			}
 			server.setRegister(false);
 		}
 	}
-	
+	/**
+	 * 从zk上获取目录/uncode/schedule/server/下面的所有子节点
+	 * 并按照最后一部分的serverCode排序(从小到大)之后返回
+	 */
 	public List<String> loadScheduleServerNames() throws Exception {
 		String zkPath = this.pathServer;
 		if (this.getZooKeeper().exists(zkPath, false) == null) {
