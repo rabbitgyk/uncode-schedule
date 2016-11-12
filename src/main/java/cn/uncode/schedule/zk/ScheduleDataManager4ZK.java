@@ -210,6 +210,20 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 		});
 		return serverList;
 	}
+	
+	public List<String> loadScheduleServerIps() throws Exception{
+		String zkPath = this.pathServer;
+		if (this.getZooKeeper().exists(zkPath, false) == null) {
+			return new ArrayList<String>();
+		}
+		List<String> serverList = this.getZooKeeper()
+				.getChildren(zkPath, false);
+		List<String> serverIpList = new ArrayList<String>(serverList.size());
+		for(String ser:serverList){
+			serverIpList.add(ser.substring(0, ser.indexOf("$")));
+		}
+		return serverIpList;
+	}
 
 	
 	@Override

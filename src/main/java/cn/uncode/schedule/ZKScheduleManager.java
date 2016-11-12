@@ -178,8 +178,9 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 			return;
 		}
 		//黑名单
+		List<String> serverIpList = ScheduleUtil.getServerIpList(serverList);
 		for(String ip:zkManager.getIpBlacklist()){
-			int index = serverList.indexOf(ip);
+			int index = serverIpList.indexOf(ip);
 			if (index > -1){
 				serverList.remove(index);
 			}

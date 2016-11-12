@@ -36,6 +36,7 @@ public interface IScheduleDataManager{
 	
 	
 	public List<String> loadScheduleServerNames() throws Exception;
+	public List<String> loadScheduleServerIps() throws Exception;
 	
 	public void assignTask(String currentUuid, List<String> taskServerList) throws Exception;
 	

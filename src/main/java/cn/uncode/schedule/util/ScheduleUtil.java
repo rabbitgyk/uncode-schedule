@@ -6,7 +6,9 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 
 
@@ -133,6 +135,19 @@ public class ScheduleUtil {
 	 */
 	public static String getServerCode(){
 		return prop.getProperty("uncode.schedule.server.code");
+	}
+	
+	/**
+	 * 从zk的server list中获取server ip list ，保持元素顺序
+	 * @param serverList
+	 * @return
+	 */
+	public static List<String> getServerIpList(List<String> serverList){
+		List<String> serverIpList = new ArrayList<String>(serverList.size());
+		for(String ser:serverList){
+			serverIpList.add(ser.substring(0, ser.indexOf("$")));
+		}
+		return serverIpList;
 	}
     
     public static void main(String[] args) {
