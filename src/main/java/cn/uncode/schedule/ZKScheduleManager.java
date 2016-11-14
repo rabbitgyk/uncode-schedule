@@ -19,10 +19,12 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.scheduling.support.CronTrigger;
 
 import cn.uncode.schedule.core.IScheduleDataManager;
 import cn.uncode.schedule.core.ScheduleServer;
 import cn.uncode.schedule.core.ScheduledMethodRunnable;
+import cn.uncode.schedule.core.TaskDefine;
 import cn.uncode.schedule.util.ScheduleUtil;
 import cn.uncode.schedule.zk.ScheduleDataManager4ZK;
 import cn.uncode.schedule.zk.ZKManager;
@@ -372,6 +374,17 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
     }
 	
 	public ScheduledFuture<?> schedule(Runnable task, Trigger trigger) {
+		TaskDefine taskDefine = getTaskDefine(task);
+		if(trigger instanceof CronTrigger){
+			CronTrigger cronTrigger = (CronTrigger)trigger;
+			taskDefine.setCronExpression(cronTrigger.getExpression());
+			LOGGER.info("----------------------trigger:" + cronTrigger.getExpression());
+		}
+		try {
+			scheduleDataManager.addTask(taskDefine);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return super.schedule(taskWrapper(task), trigger);
 	}
 
@@ -406,7 +419,21 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 		return ZKScheduleManager.applicationcontext;
 	}
 	
-	
+	private TaskDefine getTaskDefine(Runnable task){
+		TaskDefine taskDefine = new TaskDefine();
+		if(task instanceof org.springframework.scheduling.support.ScheduledMethodRunnable){
+			taskDefine.setType(TaskDefine.TASK_TYPE_QS);
+			org.springframework.scheduling.support.ScheduledMethodRunnable springScheduledMethodRunnable = (org.springframework.scheduling.support.ScheduledMethodRunnable)task;
+			Method targetMethod = springScheduledMethodRunnable.getMethod();
+			String[] beanNames = applicationcontext.getBeanNamesForType(targetMethod.getDeclaringClass());
+	    	if(null != beanNames && StringUtils.isNotEmpty(beanNames[0])){
+	    		taskDefine.setTargetBean(beanNames[0]);
+	    		taskDefine.setTargetMethod(targetMethod.getName());
+	    		LOGGER.info("----------------------name:" + taskDefine.stringKey());
+	    	}
+		}
+		return taskDefine;
+	}
 
 
 }

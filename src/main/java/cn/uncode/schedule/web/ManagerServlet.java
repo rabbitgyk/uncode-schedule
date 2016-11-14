@@ -186,6 +186,7 @@ public class ManagerServlet extends HttpServlet{
 			TaskDefine taskDefine = new TaskDefine();
 			taskDefine.setTargetBean(bean);
 			taskDefine.setTargetMethod(method);
+			taskDefine.setType(TaskDefine.TASK_TYPE_UNCODE);
 			String cronExpression = request.getParameter("cronExpression");
 			if(StringUtils.isNotEmpty(cronExpression)){
 				taskDefine.setCronExpression(cronExpression);

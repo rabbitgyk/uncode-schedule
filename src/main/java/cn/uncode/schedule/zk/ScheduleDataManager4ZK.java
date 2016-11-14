@@ -437,7 +437,7 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 				if (null != data) {
 					 String json = new String(data);
 					 taskDefine = this.gson.fromJson(json, TaskDefine.class);
-					 taskDefine.setType("uncode task");
+					 //taskDefine.setType("uncode task");
 				}else{
 					String[] names = child.split("#");
 					if(StringUtils.isNotEmpty(names[0])){
@@ -479,8 +479,10 @@ public class ScheduleDataManager4ZK implements IScheduleDataManager {
 						 if (null != data) {
 							 String json = new String(data);
 							 TaskDefine taskDefine = this.gson.fromJson(json, TaskDefine.class);
-							 ownerTask.add(taskName);
-							 DynamicTaskManager.scheduleTask(taskDefine, new Date(getSystemTime()));
+							 if(TaskDefine.TASK_TYPE_UNCODE.equals(taskDefine.getType())){
+								 ownerTask.add(taskName);
+								 DynamicTaskManager.scheduleTask(taskDefine, new Date(getSystemTime()));
+							 }
 						 }
 					 }
 				 }
