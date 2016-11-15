@@ -368,8 +368,20 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 		this.zkConfig = zkConfig;
 	}
 	
+	private void addTask(TaskDefine taskDefine){
+		try {
+			scheduleDataManager.addTask(taskDefine);
+		} catch (Exception e) {
+			LOGGER.error(String.format("add task exception, taskName:%s", taskDefine.stringKey()), e);
+		}
+	}
+	
 	@Override
     public ScheduledFuture<?> scheduleAtFixedRate(Runnable task, long period) {
+		TaskDefine taskDefine = getTaskDefine(task);
+		LOGGER.info("spring task init------taskName:{}, period:{}", taskDefine.stringKey(), period);
+		taskDefine.setPeriod(period);
+		addTask(taskDefine);
         return super.scheduleAtFixedRate(taskWrapper(task), period);
     }
 	
@@ -378,29 +390,45 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 		if(trigger instanceof CronTrigger){
 			CronTrigger cronTrigger = (CronTrigger)trigger;
 			taskDefine.setCronExpression(cronTrigger.getExpression());
-			LOGGER.info("----------------------trigger:" + cronTrigger.getExpression());
+			LOGGER.info("spring task init------trigger:" + cronTrigger.getExpression());
 		}
-		try {
-			scheduleDataManager.addTask(taskDefine);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		addTask(taskDefine);
 		return super.schedule(taskWrapper(task), trigger);
 	}
 
 	public ScheduledFuture<?> schedule(Runnable task, Date startTime) {
+		TaskDefine taskDefine = getTaskDefine(task);
+		LOGGER.info("spring task init------taskName:{}, period:{}", taskDefine.stringKey(), startTime);
+		taskDefine.setStartTime(startTime);
+		addTask(taskDefine);
 		return super.schedule(taskWrapper(task), startTime);
 	}
 
 	public ScheduledFuture<?> scheduleAtFixedRate(Runnable task, Date startTime, long period) {
+		TaskDefine taskDefine = getTaskDefine(task);
+		LOGGER.info("spring task init------taskName:{}, period:{}", taskDefine.stringKey(), period);
+		taskDefine.setStartTime(startTime);
+		taskDefine.setPeriod(period);
+		addTask(taskDefine);
 		return super.scheduleAtFixedRate(taskWrapper(task), startTime, period);
 	}
 
 	public ScheduledFuture<?> scheduleWithFixedDelay(Runnable task, Date startTime, long delay) {
+		TaskDefine taskDefine = getTaskDefine(task);
+		LOGGER.info("spring task init------taskName:{}, delay:{}", taskDefine.stringKey(), delay);
+		taskDefine.setStartTime(startTime);
+		taskDefine.setPeriod(delay);
+		taskDefine.setType(TaskDefine.TASK_TYPE_QSD);
+		addTask(taskDefine);
 		return super.scheduleWithFixedDelay(taskWrapper(task), startTime, delay);
 	}
 
 	public ScheduledFuture<?> scheduleWithFixedDelay(Runnable task, long delay) {
+		TaskDefine taskDefine = getTaskDefine(task);
+		LOGGER.info("spring task init------taskName:{}, delay:{}", taskDefine.stringKey(), delay);
+		taskDefine.setPeriod(delay);
+		taskDefine.setType(TaskDefine.TASK_TYPE_QSD);
+		addTask(taskDefine);
 		return super.scheduleWithFixedDelay(taskWrapper(task), delay);
 	}
 	
