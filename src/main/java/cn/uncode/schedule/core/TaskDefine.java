@@ -10,7 +10,8 @@ import java.util.Date;
 public class TaskDefine {
 	
 	public static final String TASK_TYPE_UNCODE="uncode task";
-	public static final String TASK_TYPE_QS="quartz/spring task	";
+	public static final String TASK_TYPE_QS="quartz/spring task";
+	public static final String TASK_TYPE_QSD="quartz/spring task delay";
 	
     /**
      * 目标bean
