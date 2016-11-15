@@ -33,7 +33,7 @@ public class TaskDefine {
 	private Date startTime;
 	
 	/**
-	 * 周期（秒）
+	 * 周期（毫秒）
 	 */
 	private long period;
 	

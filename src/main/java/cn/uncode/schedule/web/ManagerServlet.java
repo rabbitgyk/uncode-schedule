@@ -93,7 +93,7 @@ public class ManagerServlet extends HttpServlet{
 			"\t 										</div>\n"+
 			"\t 									</div>\n"+
 			"\t 									<div class=\"form-group\">\n"+
-			"\t 										<label class=\"col-sm-4 control-label\" for=\"period\">周期（秒）</label>\n"+
+			"\t 										<label class=\"col-sm-4 control-label\" for=\"period\">周期（毫秒）</label>\n"+
 			"\t 										<div class=\"col-sm-6\">\n"+
 			"\t 											<input id=\"period\" name=\"period\" type=\"text\" class=\"form-control\" required>\n"+
 			"\t 										</div>\n"+
@@ -153,7 +153,7 @@ public class ManagerServlet extends HttpServlet{
 			"\t 						<th>类型</th>\n"+
 			"\t 						<th>cron表达式</th>\n"+
 			"\t 						<th>开始时间</th>\n"+
-			"\t 						<th>周期（秒）</th>\n"+
+			"\t 						<th>周期（毫秒）</th>\n"+
 			"\t 						<th>执行节点</th>\n"+
 			"\t 						<th>执行次数</th>\n"+
 			"\t 						<th>最近执行时间</th>\n"+
