@@ -368,11 +368,13 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 		this.zkConfig = zkConfig;
 	}
 	
-	private void addTask(TaskDefine taskDefine){
-		try {
-			scheduleDataManager.addTask(taskDefine);
-		} catch (Exception e) {
-			LOGGER.error(String.format("add task exception, taskName:%s", taskDefine.stringKey()), e);
+	private void addTask(Runnable task, TaskDefine taskDefine){
+		if(task instanceof org.springframework.scheduling.support.ScheduledMethodRunnable){
+			try {
+				scheduleDataManager.addTask(taskDefine);
+			} catch (Exception e) {
+				LOGGER.error(String.format("add task exception, taskName:%s", taskDefine.stringKey()), e);
+			}
 		}
 	}
 	
@@ -381,7 +383,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 		TaskDefine taskDefine = getTaskDefine(task);
 		LOGGER.info("spring task init------taskName:{}, period:{}", taskDefine.stringKey(), period);
 		taskDefine.setPeriod(period);
-		addTask(taskDefine);
+		addTask(task, taskDefine);
         return super.scheduleAtFixedRate(taskWrapper(task), period);
     }
 	
@@ -392,7 +394,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 			taskDefine.setCronExpression(cronTrigger.getExpression());
 			LOGGER.info("spring task init------trigger:" + cronTrigger.getExpression());
 		}
-		addTask(taskDefine);
+		addTask(task, taskDefine);
 		return super.schedule(taskWrapper(task), trigger);
 	}
 
@@ -400,7 +402,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 		TaskDefine taskDefine = getTaskDefine(task);
 		LOGGER.info("spring task init------taskName:{}, period:{}", taskDefine.stringKey(), startTime);
 		taskDefine.setStartTime(startTime);
-		addTask(taskDefine);
+		addTask(task, taskDefine);
 		return super.schedule(taskWrapper(task), startTime);
 	}
 
@@ -409,7 +411,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 		LOGGER.info("spring task init------taskName:{}, period:{}", taskDefine.stringKey(), period);
 		taskDefine.setStartTime(startTime);
 		taskDefine.setPeriod(period);
-		addTask(taskDefine);
+		addTask(task, taskDefine);
 		return super.scheduleAtFixedRate(taskWrapper(task), startTime, period);
 	}
 
@@ -419,7 +421,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 		taskDefine.setStartTime(startTime);
 		taskDefine.setPeriod(delay);
 		taskDefine.setType(TaskDefine.TASK_TYPE_QSD);
-		addTask(taskDefine);
+		addTask(task, taskDefine);
 		return super.scheduleWithFixedDelay(taskWrapper(task), startTime, delay);
 	}
 
@@ -428,7 +430,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 		LOGGER.info("spring task init------taskName:{}, delay:{}", taskDefine.stringKey(), delay);
 		taskDefine.setPeriod(delay);
 		taskDefine.setType(TaskDefine.TASK_TYPE_QSD);
-		addTask(taskDefine);
+		addTask(task, taskDefine);
 		return super.scheduleWithFixedDelay(taskWrapper(task), delay);
 	}
 	
