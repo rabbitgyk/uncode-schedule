@@ -75,15 +75,21 @@ public class ConsoleManager {
 		}
 		Method method = null;
 		try {
-			//method = object.getClass().getDeclaredMethod(task.getTargetMethod(), String.class);
-			method = object.getClass().getDeclaredMethod(task.getTargetMethod());
+			if(StringUtils.isNotEmpty(task.getParams())){
+				method = object.getClass().getDeclaredMethod(task.getTargetMethod(), String.class);
+			}else{
+				method = object.getClass().getDeclaredMethod(task.getTargetMethod());
+			}
 		} catch (Exception e) {
 			log.error(String.format("定时任务bean[%s]，method[%s]初始化失败.", task.getTargetBean(), task.getTargetMethod()), e);
 		}
 		if (method != null) {
 			try {
-				//method.invoke(object, scheduleJob.getJobName());
-				method.invoke(object);
+				if(StringUtils.isNotEmpty(task.getParams())){
+					method.invoke(object, task.getParams());
+				}else{
+					method.invoke(object);
+				}
 			} catch (Exception e) {
 				log.error(String.format("定时任务bean[%s]，method[%s]调用失败.", task.getTargetBean(), task.getTargetMethod()), e);
 			}
