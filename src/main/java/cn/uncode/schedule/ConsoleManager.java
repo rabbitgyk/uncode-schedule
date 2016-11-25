@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cn.uncode.schedule.core.TaskDefine;
-import cn.uncode.schedule.util.ScheduleUtil;
 
 
 
@@ -71,7 +70,7 @@ public class ConsoleManager {
 			object = ZKScheduleManager.getApplicationcontext().getBean(task.getTargetBean());
 		}
 		if (object == null) {
-			log.error("任务名称 = [{}]---------------未启动成功，请检查是否配置正确！！！", task.getTargetBean());
+			log.error("任务名称 = [{}]---------------未启动成功，请检查是否配置正确！！！", task.stringKey());
 			return;
 		}
 		Method method = null;
@@ -89,7 +88,7 @@ public class ConsoleManager {
 				log.error(String.format("定时任务bean[%s]，method[%s]调用失败.", task.getTargetBean(), task.getTargetMethod()), e);
 			}
 		}
-		log.info("任务名称 = [{}]----------启动成功", ScheduleUtil.getTaskNameFormBean(task.getTargetBean(), task.getTargetMethod()));
+		log.info("任务名称 = [{}]----------启动成功", task.stringKey());
 	}
     
 }
