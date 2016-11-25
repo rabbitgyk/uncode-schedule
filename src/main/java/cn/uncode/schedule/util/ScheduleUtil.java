@@ -149,7 +149,7 @@ public class ScheduleUtil {
 		}
 		return serverIpList;
 	}
-    
+	
     public static void main(String[] args) {
         System.out.println(printArray(assignTaskNumber(1,10,0)));
         System.out.println(printArray(assignTaskNumber(2,10,0)));
