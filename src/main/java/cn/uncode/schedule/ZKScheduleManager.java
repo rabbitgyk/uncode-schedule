@@ -444,6 +444,10 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 	public Map<String, Boolean> getIsOwnerMap() {
 		return isOwnerMap;
 	}
+	
+	public List<String> loadScheduleServerIps() throws Exception{
+		return scheduleDataManager.loadScheduleServerIps();
+	}
 
 	public static ApplicationContext getApplicationcontext() {
 		return ZKScheduleManager.applicationcontext;

@@ -64,14 +64,14 @@ public class ConsoleManager {
      * 手动执行定时任务
      * @param task
      */
-    public static void runTask(TaskDefine task){
+    public static void runTask(TaskDefine task) throws Exception{
 		Object object = null;
 		if (StringUtils.isNotEmpty(task.getTargetBean())) {
 			object = ZKScheduleManager.getApplicationcontext().getBean(task.getTargetBean());
 		}
 		if (object == null) {
-			log.error("任务名称 = [{}]---------------未启动成功，请检查是否配置正确！！！", task.stringKey());
-			return;
+			log.error("任务名称 = [{}]---------------未启动成功，targetBean不存在，请检查是否配置正确！！！", task.stringKey());
+			throw new Exception("targetBean:"+task.getTargetBean()+"不存在");
 		}
 		Method method = null;
 		try {
@@ -82,6 +82,7 @@ public class ConsoleManager {
 			}
 		} catch (Exception e) {
 			log.error(String.format("定时任务bean[%s]，method[%s]初始化失败.", task.getTargetBean(), task.getTargetMethod()), e);
+			throw new Exception("定时任务:"+task.stringKey()+"初始化失败");
 		}
 		if (method != null) {
 			try {
@@ -92,9 +93,14 @@ public class ConsoleManager {
 				}
 			} catch (Exception e) {
 				log.error(String.format("定时任务bean[%s]，method[%s]调用失败.", task.getTargetBean(), task.getTargetMethod()), e);
+				throw new Exception("定时任务:"+task.stringKey()+"调用失败");
 			}
 		}
 		log.info("任务名称 = [{}]----------启动成功", task.stringKey());
 	}
+    
+    public List<String> getServerIps() throws Exception{
+    	return scheduleManager.loadScheduleServerIps();
+    }
     
 }
