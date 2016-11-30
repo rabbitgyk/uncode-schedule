@@ -99,7 +99,7 @@ public class ConsoleManager {
 		log.info("任务名称 = [{}]----------启动成功", task.stringKey());
 	}
     
-    public List<String> getServerIps() throws Exception{
+    public static List<String> getServerIps() throws Exception{
     	return scheduleManager.loadScheduleServerIps();
     }
     
