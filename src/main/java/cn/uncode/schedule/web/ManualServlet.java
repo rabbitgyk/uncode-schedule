@@ -43,11 +43,11 @@ public class ManualServlet extends HttpServlet{
 			}
 			try {
 				ConsoleManager.runTask(taskDefine);
-				result.put("code", "0000");
-				result.put("msg", "调用成功");
+				result.put("returnCode", "0000");
+				result.put("returnMsg", "调用成功");
 			} catch (Exception e) {
-				result.put("code", "8888");
-				result.put("msg", e.getMessage());
+				result.put("returnCode", "8888");
+				result.put("returnMsg", e.getMessage());
 			}
 		}
 		
