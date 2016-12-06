@@ -204,7 +204,11 @@ public class ManagerServlet extends HttpServlet{
 				taskDefine.setParams(param);
 			}
 			if(StringUtils.isNotEmpty(cronExpression) || StringUtils.isNotEmpty(period)){
-				ConsoleManager.addScheduleTask(taskDefine);
+				try {
+					ConsoleManager.addScheduleTask(taskDefine);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 			response.sendRedirect(request.getSession().getServletContext().getContextPath()+"/uncode/schedule");
 		}

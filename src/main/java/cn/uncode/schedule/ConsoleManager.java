@@ -29,12 +29,8 @@ public class ConsoleManager {
         return ConsoleManager.scheduleManager;
     }
 
-    public static void addScheduleTask(TaskDefine taskDefine) {
-        try {
-			ConsoleManager.getScheduleManager().getScheduleDataManager().addTask(taskDefine);
-		} catch (Exception e) {
-			log.error(e.getMessage(), e);
-		}
+    public static void addScheduleTask(TaskDefine taskDefine) throws Exception{
+		ConsoleManager.getScheduleManager().getScheduleDataManager().addTask(taskDefine);
     }
     
     public static void delScheduleTask(TaskDefine taskDefine) {
