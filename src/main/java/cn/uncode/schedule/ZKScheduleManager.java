@@ -192,13 +192,16 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 	}
 
 	/**
-	 * 定时向数据配置中心更新当前服务器的心跳信息。 如果发现本次更新的时间如果已经超过了，服务器死亡的心跳周期，则不能在向服务器更新信息。
+	 * 1. 定时向数据配置中心更新当前服务器的心跳信息。 如果发现本次更新的时间如果已经超过了，服务器死亡的心跳周期，则不能在向服务器更新信息。
 	 * 而应该当作新的服务器，进行重新注册。
+	 * 2. 任务分配
+	 * 3. 检查任务是否属于本机，是否添加到调度器
 	 * 
 	 * @throws Exception
 	 */
 	public void refreshScheduleServer() throws Exception {
 		try {
+			// 更新或者注册服务器信息
 			rewriteScheduleInfo();
 			// 如果任务信息没有初始化成功，不做任务相关的处理
 			if (!this.isScheduleServerRegister) {
@@ -244,6 +247,11 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 		}
 	}
 	
+	/**
+	 * 将Spring的定时任务进行包装，决定任务是否在本机执行。
+	 * @param task
+	 * @return
+	 */
 	private Runnable taskWrapper(final Runnable task){
 		return new Runnable(){
 			public void run(){
