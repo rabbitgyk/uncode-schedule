@@ -465,6 +465,7 @@ public class ZKScheduleManager extends ThreadPoolTaskScheduler implements Applic
 		TaskDefine taskDefine = new TaskDefine();
 		if(task instanceof org.springframework.scheduling.support.ScheduledMethodRunnable){
 			taskDefine.setType(TaskDefine.TASK_TYPE_QS);
+			taskDefine.setStartTime(new Date());
 			org.springframework.scheduling.support.ScheduledMethodRunnable springScheduledMethodRunnable = (org.springframework.scheduling.support.ScheduledMethodRunnable)task;
 			Method targetMethod = springScheduledMethodRunnable.getMethod();
 			String[] beanNames = applicationcontext.getBeanNamesForType(targetMethod.getDeclaringClass());
